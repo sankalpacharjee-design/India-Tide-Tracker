@@ -1,0 +1,2776 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>India Tide Tracker — Easy High & Low Tide Guide</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          },
+          colors: {
+            abyssal: '#07111E',
+            trench: '#0E1E32',
+            shelf: '#152A44',
+            biolum: '#38BDF8',
+            seafoam: '#2DD4BF',
+            coral: '#FB7185',
+            amber: '#FBBF24'
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+    body {
+      background-color: #050D1A;
+      background-image:
+        radial-gradient(circle at 12% 15%, rgba(56, 189, 248, 0.28), transparent 38%),
+        radial-gradient(circle at 88% 18%, rgba(45, 212, 191, 0.24), transparent 42%),
+        radial-gradient(circle at 50% 60%, rgba(99, 102, 241, 0.18), transparent 48%),
+        radial-gradient(circle at 20% 85%, rgba(14, 165, 233, 0.22), transparent 40%),
+        linear-gradient(135deg, #040B16 0%, #0A192F 50%, #071324 100%);
+      background-attachment: fixed;
+      color: #F0F6FC;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+    /* Primary Frosted Glassmorphism Surface */
+    .glass-card {
+      position: relative;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.035) 100%);
+      backdrop-filter: blur(24px) saturate(190%);
+      -webkit-backdrop-filter: blur(24px) saturate(190%);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-top-color: rgba(255, 255, 255, 0.35);
+      border-left-color: rgba(255, 255, 255, 0.28);
+      box-shadow:
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.30),
+        inset 0 -1px 1px 0 rgba(56, 189, 248, 0.10),
+        0 20px 45px -12px rgba(2, 8, 22, 0.65);
+    }
+    .glass-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(125deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 32%, transparent 60%);
+      pointer-events: none;
+    }
+    /* Nested Translucent Glass Wells & Controls */
+    .glass-well {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.075) 0%, rgba(15, 32, 55, 0.38) 100%);
+      backdrop-filter: blur(16px) saturate(170%);
+      -webkit-backdrop-filter: blur(16px) saturate(170%);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-top-color: rgba(255, 255, 255, 0.26);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.20),
+        0 8px 20px -6px rgba(2, 8, 20, 0.45);
+    }
+    .glass-pill {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.22);
+    }
+    .glass-pill:hover {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(56, 189, 248, 0.45);
+    }
+    select option {
+      background-color: #0B192C;
+      color: #F0F6FC;
+    }
+    @keyframes orbDrift {
+      0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+      50% { transform: translate3d(28px, -22px, 0) scale(1.08); }
+    }
+    .ambient-orb-1 {
+      animation: orbDrift 14s ease-in-out infinite;
+    }
+    .ambient-orb-2 {
+      animation: orbDrift 18s ease-in-out infinite reverse;
+    }
+    .bathymetric-bg {
+      background-image: radial-gradient(rgba(56, 189, 248, 0.07) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(148, 163, 184, 0.25);
+      height: 8px;
+      border-radius: 999px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #38BDF8;
+      border: 2px solid #F0F6FC;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(7, 17, 30, 0.6);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.25);
+      border-radius: 999px;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.9; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(1.35); }
+    }
+    .pulse-ring {
+      animation: pulseGlow 2.4s infinite ease-in-out;
+    }
+    @keyframes waveSlide {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-wave-slide {
+      animation: waveSlide 4s linear infinite;
+    }
+    @keyframes dashFlow {
+      to { stroke-dashoffset: -28; }
+    }
+    .animate-dash-flow {
+      animation: dashFlow 1.2s linear infinite;
+    }
+    @keyframes floatBob {
+      0%, 100% { transform: translateY(0px) rotate(-1.5deg); }
+      50% { transform: translateY(-4px) rotate(1.5deg); }
+    }
+    .animate-boat-bob {
+      animation: floatBob 3s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="min-h-screen bathymetric-bg selection:bg-sky-500/30 selection:text-sky-200 relative">
+
+  <!-- Ambient Luminous Orbs Behind Frosted Glass -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
+    <div class="ambient-orb-1 absolute -top-24 left-[6%] w-96 h-96 rounded-full bg-sky-400/25 blur-[110px]"></div>
+    <div class="ambient-orb-2 absolute top-[18%] right-[8%] w-[26rem] h-[26rem] rounded-full bg-teal-400/20 blur-[120px]"></div>
+    <div class="ambient-orb-1 absolute bottom-[8%] left-[25%] w-[28rem] h-[28rem] rounded-full bg-indigo-500/20 blur-[130px]"></div>
+    <div class="ambient-orb-2 absolute bottom-[15%] right-[15%] w-80 h-80 rounded-full bg-amber/15 blur-[105px]"></div>
+  </div>
+
+  <!-- Top Navigation & Simple Beach Selector Bar -->
+  <header class="sticky top-0 z-30 border-b border-white/15 bg-white/[0.06] backdrop-blur-2xl shadow-[0_8px_32px_rgba(2,8,22,0.45)]">
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand Identity -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400/25 to-teal-400/25 border border-sky-400/35 flex items-center justify-center shadow-inner">
+          <svg class="w-6 h-6 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2 12c1.5-2.5 3.5-2.5 5 0s3.5 2.5 5 0 3.5-2.5 5 0 3.5 2.5 5 0" stroke-linecap="round"/>
+            <path d="M2 17c1.5-2.5 3.5-2.5 5 0s3.5 2.5 5 0 3.5-2.5 5 0 3.5 2.5 5 0" stroke-linecap="round" stroke-opacity="0.55"/>
+            <circle cx="17" cy="6" r="2.5" fill="currentColor" fill-opacity="0.25"/>
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-display font-bold tracking-tight text-lg text-slate-100">India Tide Tracker</span>
+            <span class="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-teal-500/15 text-teal-300 border border-teal-400/25">Easy Guide • IST</span>
+          </div>
+          <p class="text-xs text-slate-400 hidden sm:block">Simple High &amp; Low Tide Times, Water Depth &amp; Beach Safety Across India</p>
+        </div>
+      </div>
+
+      <!-- Beach / Location Selector & Controls -->
+      <div class="flex flex-wrap items-center gap-2 sm:gap-2.5 flex-1 max-w-3xl justify-end">
+        <!-- Location Dropdown -->
+        <div class="relative flex-1 min-w-[220px] max-w-xs">
+          <label for="stationSelect" class="sr-only">Choose Beach or Port</label>
+          <select id="stationSelect" class="w-full appearance-none glass-pill text-slate-100 text-sm font-semibold rounded-xl pl-3.5 pr-9 py-2 border border-sky-400/30 focus:outline-none focus:border-sky-400 transition cursor-pointer">
+          </select>
+          <i data-lucide="map-pin" class="w-4 h-4 text-sky-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+        </div>
+
+        <!-- Save Favorite Beach Button -->
+        <button id="favStationBtn" type="button" title="Save this beach to your favorites" class="px-2.5 py-2 rounded-xl glass-pill border border-sky-400/20 text-slate-300 hover:text-amber flex items-center gap-1 text-xs font-medium transition">
+          <i data-lucide="star" class="w-4 h-4" id="favStarIcon"></i>
+          
+        </button>
+
+        <!-- Add Custom Beach Button -->
+        <button id="openCustomStationBtn" type="button" class="px-3 py-2 rounded-xl glass-pill border border-sky-400/20 text-xs font-medium text-sky-300 flex items-center gap-1.5 transition">
+          <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+          <span class="hidden md:inline">Add Spot</span>
+        </button>
+
+        <!-- Date Picker Controls -->
+        <div class="flex items-center glass-well rounded-xl p-0.5">
+          <button id="prevDayBtn" type="button" title="Previous Day" class="p-1.5 text-slate-300 hover:text-white rounded-lg hover:bg-sky-500/15 transition">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+          </button>
+          <input id="dateInput" type="date" aria-label="Choose Date" class="bg-transparent text-xs font-medium text-slate-100 px-2 py-1 focus:outline-none cursor-pointer">
+          <button id="nextDayBtn" type="button" title="Next Day" class="p-1.5 text-slate-300 hover:text-white rounded-lg hover:bg-sky-500/15 transition">
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+          <button id="todayBtn" type="button" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-sky-500 text-slate-950 hover:bg-sky-400 mr-1 transition">
+            Now
+          </button>
+        </div>
+
+        <!-- Meters / Feet Toggle & Reference Level -->
+        <div class="flex items-center gap-1.5">
+          <div class="inline-flex rounded-xl glass-well p-0.5" role="group" aria-label="Meters or Feet">
+            <button id="unitMetersBtn" type="button" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-sky-500 text-slate-950 transition">m</button>
+            <button id="unitFeetBtn" type="button" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-400 hover:text-slate-200 transition">ft</button>
+          </div>
+          <select id="datumSelect" aria-label="Water Level Reference" title="Choose how water height is measured" class="glass-pill text-xs text-slate-200 rounded-xl px-2.5 py-1.5 border border-sky-400/20 focus:outline-none focus:border-sky-400 cursor-pointer hidden md:block">
+            <option value="MLLW">Base: Low Water</option>
+            <option value="MSL">Base: Avg Sea Level</option>
+            <option value="LAT">Base: Chart Zero</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace Container -->
+  <main class="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 py-5 space-y-5">
+
+    <!-- Coastline Filter Bar & Location Info -->
+    <div class="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-slate-800/80">
+      <!-- Filter by Coastline -->
+      <div class="flex flex-wrap items-center gap-1.5">
+        <span class="text-xs font-medium text-slate-400 mr-1">Filter Coast:</span>
+        <div class="inline-flex flex-wrap items-center rounded-xl glass-well p-1 gap-1" role="group" aria-label="Indian Coastline Filter">
+          <button type="button" data-coast-filter="all" class="coast-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-sky-500 text-slate-950 transition">All India (15)</button>
+          <button type="button" data-coast-filter="east" class="coast-filter-btn px-3 py-1 rounded-lg text-xs font-medium text-slate-300 hover:text-sky-300 transition">Bay of Bengal</button>
+          <button type="button" data-coast-filter="west" class="coast-filter-btn px-3 py-1 rounded-lg text-xs font-medium text-slate-300 hover:text-sky-300 transition">Arabian Sea</button>
+          <button type="button" data-coast-filter="islands" class="coast-filter-btn px-3 py-1 rounded-lg text-xs font-medium text-slate-300 hover:text-sky-300 transition">Islands</button>
+        </div>
+        <button id="filterFavsBtn" type="button" class="text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-700 text-slate-300 hover:border-amber/50 flex items-center gap-1.5 transition">
+          <i data-lucide="star" class="w-3.5 h-3.5 text-amber"></i>
+          <span id="filterFavsLabel">Saved Spots (0)</span>
+        </button>
+      </div>
+
+      <!-- Location Quick Facts + Share Button -->
+      <div class="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+        <span class="flex items-center gap-1 text-slate-300">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-sky-400"></i>
+          <span id="stationCoordsText">21.6500° N, 88.0500° E</span>
+        </span>
+        <span class="hidden sm:flex items-center gap-1">
+          <i data-lucide="waves" class="w-3.5 h-3.5 text-teal-400"></i>
+          <span id="stationRegimeText">Big Tide Swing</span>
+        </span>
+        <span class="hidden md:flex items-center gap-1 font-mono text-[11px] text-slate-500">
+          <span id="stationIdText">INCOIS-WB-SGR</span> • <span id="stationTzText">IST (UTC+5:30)</span>
+        </span>
+        <button id="exportTelemetryBtn" type="button" class="text-xs font-semibold px-3 py-1.5 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-400/30 flex items-center gap-1.5 transition">
+          <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+          <span>Copy Bulletin</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Plain-English "At a Glance" Summary Banner -->
+    <div class="glass-card rounded-2xl p-4 sm:p-5 border-l-4 border-l-sky-400 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div class="flex items-start gap-3.5">
+        <div id="summaryIconBox" class="w-11 h-11 rounded-xl bg-sky-500/20 border border-sky-400/30 flex items-center justify-center shrink-0 text-sky-300 mt-0.5">
+          <i data-lucide="info" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-sky-400">What's Happening Right Now</span>
+            <span id="plainAdvicePill" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-teal-500/15 text-teal-300 border border-teal-400/30">Safe for Boating &amp; Fishing</span>
+          </div>
+          <p id="plainEnglishSummary" class="text-sm sm:text-base text-slate-100 mt-1 leading-relaxed">
+            At <strong>Sagar Island</strong>, the water is <strong>coming in (Rising ↑)</strong> and is currently <strong>2.84 m</strong> deep.
+          </p>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 shrink-0 self-end md:self-center">
+        <button id="playTimelapseBtn" type="button" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-teal-400 hover:from-sky-400 hover:to-teal-300 text-slate-950 font-bold text-xs flex items-center gap-2 shadow-lg transition">
+          <span id="playTimelapseIcon">▶</span>
+          <span id="playTimelapseText">Play 24h Tide Animation</span>
+        </button>
+        <select id="animSpeedSelect" aria-label="Animation Speed" class="glass-pill text-xs font-semibold text-sky-200 rounded-xl px-2.5 py-2 border border-sky-400/30 focus:outline-none cursor-pointer">
+          <option value="2">Speed: 1x</option>
+          <option value="5" selected>Speed: 2x</option>
+          <option value="10">Speed: 4x</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Live Animated Coastal Beach & Boat Simulation Graphic -->
+    <section class="glass-card rounded-2xl p-4 sm:p-5 overflow-hidden">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-teal-400 pulse-ring"></span>
+          <h2 class="font-display font-bold text-base sm:text-lg text-slate-100">Live Coastal Beach &amp; Boat Depth Animation</h2>
+          <span id="simFlowBadge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-sky-500/15 text-sky-300 border border-sky-400/30">Live 60 FPS Simulation</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-3 text-xs text-slate-300">
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber inline-block"></span>Sun / Moon Sky Arc</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-400 inline-block"></span>Animated Wave &amp; Current</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-teal-400 inline-block"></span>Shoreline Shoreline Reach</span>
+        </div>
+      </div>
+
+      <div class="relative w-full h-56 sm:h-64 rounded-2xl overflow-hidden border border-sky-400/25 glass-well">
+        <canvas id="beachSimCanvas" class="w-full h-full block"></canvas>
+        <!-- Overlay Live Readout Pill on Simulation -->
+        <div class="absolute bottom-3 left-3 flex flex-wrap items-center gap-2 px-3 py-1.5 rounded-xl glass-pill text-xs backdrop-blur-md pointer-events-none">
+          <span id="simTimeOverlay" class="font-mono font-bold text-sky-300">11:35 PM IST</span>
+          <span class="text-slate-600">•</span>
+          <span id="simDepthOverlay" class="font-mono font-bold text-white">Depth: 2.84 m</span>
+          <span class="text-slate-600">•</span>
+          <span id="simBeachStateOverlay" class="font-medium text-teal-300">Waves moving up the beach →</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Top Row: Step 1 (Current Water Level Card) + Step 2 (24-Hour Visual Wave Chart) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+
+      <!-- Left Column: Current Water Level & Next Tide Countdown (4 cols) -->
+      <section class="lg:col-span-4 glass-card rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden">
+        <div>
+          <!-- Header & Clear Rising/Falling Status Badge -->
+          <div class="flex items-center justify-between gap-2 mb-4">
+            <div>
+              <span class="text-xs font-medium text-slate-400 block">Selected Time</span>
+              <h2 id="readoutClockLabel" class="font-display text-base font-bold text-sky-300 tabular-nums">11:14 PM (23:14 IST)</h2>
+            </div>
+            <div id="tideDirectionBadge" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-teal-500/15 text-teal-300 border border-teal-400/30">
+              <span class="w-2 h-2 rounded-full bg-teal-400 pulse-ring"></span>
+              <span id="tideStateText">Tide Coming In ↑</span>
+            </div>
+          </div>
+
+          <!-- Big Water Height Number + Visual Water Tank Gauge -->
+          <div class="flex items-center justify-between gap-4 my-2 py-4 px-4 rounded-2xl glass-well">
+            <div>
+              <span class="text-xs font-medium text-slate-400 block mb-0.5">Current Water Height</span>
+              <div class="flex items-baseline gap-2">
+                <span id="heroTideHeight" class="font-display font-bold text-4xl sm:text-5xl tracking-tight text-white tabular-nums">2.84</span>
+                <span id="heroTideUnit" class="font-display text-xl text-sky-400 font-bold">m</span>
+              </div>
+              <p id="heroDatumSubtext" class="text-xs text-slate-300 mt-1.5">
+                Speed: <span id="heroSlopeRate" class="text-teal-300 font-semibold">Rising 0.54 m per hour</span>
+              </p>
+            </div>
+
+            <!-- Visual Water Level Tank -->
+            <div class="flex items-center gap-2" title="Visual Water Level Tank">
+              <div class="w-8 h-28 rounded-xl bg-slate-900 border border-slate-700 relative overflow-hidden p-1 flex flex-col justify-end">
+                <div id="verticalGaugeFill" class="w-full rounded-lg bg-gradient-to-t from-sky-600 via-sky-400 to-teal-300 transition-all duration-300" style="height: 62%;"></div>
+              </div>
+              <div class="flex flex-col justify-between h-28 text-[11px] font-mono text-slate-400 tabular-nums">
+                <span id="gaugeMaxLabel">High</span>
+                <span id="gaugeMidLabel">Mid</span>
+                <span id="gaugeMinLabel">Low</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Next High / Low Tide Countdown Box -->
+          <div class="mt-4 p-4 rounded-2xl glass-well">
+            <div class="flex items-center justify-between text-sm mb-2">
+              <span class="text-slate-200 font-semibold flex items-center gap-1.5">
+                <i data-lucide="clock" class="w-4 h-4 text-sky-400"></i>
+                <span id="nextExtremeLabel">Next High Tide</span>
+              </span>
+              <span id="nextExtremeCountdown" class="font-mono font-bold text-sky-300 bg-sky-500/15 px-2.5 py-0.5 rounded-lg border border-sky-400/25 tabular-nums">in 2h 41m</span>
+            </div>
+            <div class="w-full h-2.5 rounded-full bg-slate-800 overflow-hidden">
+              <div id="cycleProgressBar" class="h-full bg-gradient-to-r from-sky-500 to-teal-400 rounded-full transition-all duration-300" style="width: 64%;"></div>
+            </div>
+            <div class="flex items-center justify-between text-xs text-slate-300 mt-2 tabular-nums">
+              <span id="prevExtremeSummary">Last Low: 2:48 PM (0.62 m)</span>
+              <span id="nextExtremeSummary">Next High: 8:54 PM (3.91 m)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Easy-to-Understand Tide Current Speed (6-Hour Cycle) -->
+        <div class="mt-5 pt-4 border-t border-slate-800/80">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
+              <i data-lucide="activity" class="w-4 h-4 text-teal-400"></i>
+              <span>How Fast is the Water Moving?</span>
+            </span>
+            <span id="twelfthsActiveBadge" class="text-xs font-semibold text-teal-300">Fast Flow (Hour 4 of 6)</span>
+          </div>
+          <div id="twelfthsGrid" class="grid grid-cols-6 gap-1.5 pt-1">
+            <!-- Populated dynamically by JS -->
+          </div>
+          <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+            Tides move <strong>slowest</strong> right around High and Low tide (Hours 1 &amp; 6), and <strong>fastest</strong> in the middle (Hours 3 &amp; 4).
+          </p>
+        </div>
+      </section>
+
+      <!-- Right Column: Easy 24-Hour Tide Wave Chart (8 cols) -->
+      <section class="lg:col-span-8 glass-card rounded-2xl p-5 flex flex-col justify-between">
+        <!-- Top Chart Header & Activity Highlighter -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <h2 class="font-display font-bold text-lg text-slate-100">Today's 24-Hour Tide Wave</h2>
+              <span id="coeffPill" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-teal-500/15 text-teal-300 border border-teal-400/25">Strong Tide Day</span>
+            </div>
+            <p class="text-xs text-slate-300 mt-0.5">
+              <strong>Click or drag anywhere on the blue wave</strong> to check the exact water depth at that time of day.
+            </p>
+          </div>
+
+          <!-- Highlight Best Time For Activity -->
+          <div class="flex flex-wrap items-center gap-2 glass-well p-1.5 rounded-xl">
+            <label for="activityOverlaySelect" class="text-xs text-slate-300 font-medium pl-1">Highlight Best Time For:</label>
+            <select id="activityOverlaySelect" class="glass-pill text-xs font-semibold text-sky-200 rounded-lg px-2.5 py-1.5 border border-sky-400/30 focus:outline-none focus:border-sky-400 cursor-pointer">
+              <option value="none">Just Show Tide Wave</option>
+              <option value="tidepool">Beach Walk &amp; Tidepools (Low Tide)</option>
+              <option value="surf">Surfing &amp; Swimming (Mid Tide)</option>
+              <option value="boating">Boating &amp; Ferry (Deep Water)</option>
+              <option value="fishing">Shore Fishing (Rising Tide)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Interactive SVG Wave Chart -->
+        <div class="relative h-72 sm:h-80 w-full glass-well rounded-2xl overflow-hidden select-none" id="chartContainer">
+          <svg id="tideSvgChart" class="w-full h-full block cursor-pointer" viewBox="0 0 960 320" preserveAspectRatio="none">
+            <!-- Dynamically rendered curve -->
+          </svg>
+
+          <!-- Easy Legend Top-Left -->
+          <div class="absolute top-3 left-3 flex flex-wrap items-center gap-3 px-3 py-1.5 rounded-xl glass-pill text-xs text-slate-200 pointer-events-none">
+            <span class="flex items-center gap-1.5">
+              <span class="w-3 h-1 rounded bg-sky-400 inline-block"></span>
+              Water Level
+            </span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded-sm bg-amber/20 border border-amber/50 inline-block"></span>
+              Daylight Hours
+            </span>
+            <span id="overlayLegendItem" class="hidden items-center gap-1.5 text-teal-300 font-medium">
+              <span class="w-3 h-3 rounded-sm bg-teal-400/25 border border-teal-400 inline-block"></span>
+              <span id="overlayLegendText">Best Depth Zone</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Easy Time Slider & Quick Time Buttons -->
+        <div class="mt-4 pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 justify-between">
+          <div class="flex items-center gap-3 flex-1">
+            <span class="text-xs font-semibold text-slate-300 whitespace-nowrap">Slide Time:</span>
+            <input id="timeScrubber" type="range" min="0" max="1439" step="1" value="1394" aria-label="Slide to check any time of day" class="w-full">
+            <span id="scrubberTimeBadge" class="font-mono text-xs font-bold px-3 py-1.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-400/30 tabular-nums min-w-[92px] text-center">11:14 PM</span>
+          </div>
+          <div class="flex items-center gap-1.5 justify-end">
+            <button id="jumpDawnBtn" type="button" class="px-3 py-1.5 rounded-lg text-xs font-medium glass-pill text-slate-200 transition">Dawn 06:00</button>
+            <button id="jumpNoonBtn" type="button" class="px-3 py-1.5 rounded-lg text-xs font-medium glass-pill text-slate-200 transition">Noon 12:00</button>
+            <button id="jumpDuskBtn" type="button" class="px-3 py-1.5 rounded-lg text-xs font-medium glass-pill text-slate-200 transition">Dusk 17:45</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Second Row: Today's High & Low Tide Table (5 cols) + Weather, Waves & Moon (4 cols) + Safe Depth Checker & Notes (3 cols) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Today's High & Low Tide Times Table (5 cols) -->
+      <section class="lg:col-span-5 glass-card rounded-2xl p-5 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-display font-bold text-base text-slate-100 flex items-center gap-2">
+                <i data-lucide="arrow-up-down" class="w-4 h-4 text-sky-400"></i>
+                <span>Today's High &amp; Low Tide Times</span>
+              </h3>
+              <p id="scheduleDateSubtitle" class="text-xs text-slate-400 mt-0.5">Click any row below to jump to that time on the chart</p>
+            </div>
+            <span id="meanRangeBadge" class="text-xs font-semibold text-sky-300 bg-sky-500/10 px-2.5 py-1 rounded-lg border border-sky-400/20 tabular-nums">Difference: 3.42 m</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-800 text-xs font-semibold text-slate-400">
+                  <th class="py-2.5 px-2">Tide Type</th>
+                  <th class="py-2.5 px-2">Time (IST)</th>
+                  <th class="py-2.5 px-2 text-right">Water Height</th>
+                  <th class="py-2.5 px-2 text-right">Change</th>
+                  <th class="py-2.5 px-2 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="extremesTableBody" class="divide-y divide-slate-800/60 text-sm tabular-nums">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Simple Explanation Footer -->
+        <div class="mt-4 pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+          <span> Beach Profile: <strong class="text-slate-200" id="constituentsSummary">Normal twice-daily tides</strong></span>
+          <span class="text-sky-400 font-medium">Tap "Show" to view on wave</span>
+        </div>
+      </section>
+
+      <!-- Weather, Waves & Moon Today (4 cols) -->
+      <section class="lg:col-span-4 glass-card rounded-2xl p-5 flex flex-col justify-between space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-display font-bold text-base text-slate-100 flex items-center gap-2">
+              <i data-lucide="sun" class="w-4 h-4 text-amber"></i>
+              <span>Beach Weather, Waves &amp; Moon</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">How the moon and wind affect today's water</p>
+          </div>
+          <span id="springNeapTag" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber/15 text-amber border border-amber/30">Waxing Moon</span>
+        </div>
+
+        <!-- Moon Phase Explanation Card -->
+        <div class="flex items-center gap-4 p-3.5 rounded-2xl glass-well">
+          <div class="w-16 h-16 shrink-0 flex items-center justify-center" id="lunarSvgContainer">
+            <!-- Dynamic SVG Moon Phase -->
+          </div>
+          <div class="space-y-1 text-xs flex-1">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Moon Brightness:</span>
+              <span id="lunarIllumText" class="font-semibold text-slate-100 tabular-nums">28% Lit</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Moon Cycle Day:</span>
+              <span id="lunarAgeText" class="text-slate-200 tabular-nums">Day 5 of 29</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Tide Pull Strength:</span>
+              <span id="gravPullText" class="font-semibold text-teal-300">Strong Pull (84/120)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Station Weather Banner (Air Temp, Sky, Rain %, Humidity, UV) -->
+        <div class="p-3.5 rounded-2xl glass-well flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span id="stationWeatherEmoji" class="text-3xl">⛅</span>
+            <div>
+              <div class="flex items-baseline gap-2">
+                <span id="stationAirTempText" class="font-display font-bold text-xl text-white tabular-nums">29.5°C</span>
+                <span id="stationConditionText" class="text-xs font-semibold text-sky-300">Partly Cloudy</span>
+              </div>
+              <span id="stationHiLoText" class="text-[11px] text-slate-300 block">High 31°C • Low 25°C • Feels 32°C</span>
+            </div>
+          </div>
+          <div class="text-right text-xs space-y-0.5 tabular-nums">
+            <div class="text-sky-300 font-semibold">💧 Rain: <span id="stationRainPctText">20%</span></div>
+            <div class="text-slate-300">Humidity: <span id="stationHumidityText">76%</span></div>
+            <div class="text-amber text-[11px]">UV Index: <span id="stationUvText">7 High</span></div>
+          </div>
+        </div>
+
+        <!-- Easy 2x2 Beach Conditions Grid -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <div class="p-3 rounded-xl glass-well">
+            <span class="text-xs text-slate-400 block">Wave Height (Swell)</span>
+            <div class="flex items-baseline justify-between mt-1">
+              <span id="swellHeightText" class="font-bold text-base text-slate-100 tabular-nums">1.4m (4.6ft)</span>
+              <span id="swellDirText" class="text-xs text-sky-400">Every 11s</span>
+            </div>
+          </div>
+          <div class="p-3 rounded-xl glass-well">
+            <span class="text-xs text-slate-400 block">Beach Wind</span>
+            <div class="flex items-baseline justify-between mt-1">
+              <span id="windSpeedText" class="font-bold text-base text-slate-100 tabular-nums">20 km/h</span>
+              <span id="windDirText" class="text-xs text-teal-300">Gentle Breeze</span>
+            </div>
+          </div>
+          <div class="p-3 rounded-xl glass-well">
+            <span class="text-xs text-slate-400 block">Water Temperature</span>
+            <div class="flex items-baseline justify-between mt-1">
+              <span id="waterTempText" class="font-bold text-base text-slate-100 tabular-nums">28.2°C</span>
+              <span id="barometerText" class="text-xs text-slate-400">Warm Water</span>
+            </div>
+          </div>
+          <div class="p-3 rounded-xl glass-well">
+            <span class="text-xs text-slate-400 block">Sunrise &amp; Sunset</span>
+            <div class="flex items-baseline justify-between mt-1">
+              <span id="sunEnvelopeText" class="font-bold text-sm text-amber tabular-nums">5:49 AM – 5:26 PM</span>
+              <span class="text-[11px] text-slate-400">IST</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Safe Water Depth Checker & Trip Notes (3 cols) -->
+      <section class="lg:col-span-3 glass-card rounded-2xl p-5 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-display font-bold text-base text-slate-100 flex items-center gap-2">
+              <i data-lucide="shield-check" class="w-4 h-4 text-teal-400"></i>
+              <span>Safe Depth Checker</span>
+            </h3>
+            <button id="openLogModalBtn" type="button" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-teal-500/15 hover:bg-teal-500/25 text-teal-300 border border-teal-400/30 transition">
+              + Log Session
+            </button>
+          </div>
+
+          <!-- Easy Depth Slider Control -->
+          <div class="p-3.5 rounded-2xl glass-well space-y-2.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-300 font-medium">Water deeper than:</span>
+              <span id="plannerDepthValue" class="font-mono font-bold text-sm text-sky-300 tabular-nums">1.50 m</span>
+            </div>
+            <input id="plannerDepthSlider" type="range" min="0.2" max="3.8" step="0.1" value="1.5" aria-label="Minimum Water Depth Needed" class="w-full">
+            <div class="pt-1">
+              <span class="text-xs text-slate-400 block mb-1.5">Times today with enough water:</span>
+              <div id="safeWindowsList" class="flex flex-wrap gap-1.5">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Beach Notes / Logbook -->
+          <div class="mt-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-300">Beach &amp; Trip Notes</span>
+              <span id="logCountBadge" class="text-xs text-slate-400">2 notes</span>
+            </div>
+            <div id="sessionLogList" class="space-y-2 max-h-40 overflow-y-auto custom-scrollbar pr-1">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-400 mt-3 pt-2 border-t border-slate-800/80">
+          Useful for boats crossing sandbars or checking when the beach is dry.
+        </p>
+      </section>
+    </div>
+
+    <!-- Third Row: 7-Day Tide Forecast -->
+    <section class="glass-card rounded-2xl p-5">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <div>
+          <h3 class="font-display font-bold text-base text-slate-100 flex items-center gap-2">
+            <i data-lucide="calendar-days" class="w-4 h-4 text-sky-400"></i>
+            <span>7-Day Tide Forecast (Click Any Day to View)</span>
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">Shows each day's highest high tide, lowest low tide, and how strong the tide pull is</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3 text-xs text-slate-300">
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-teal-400 inline-block"></span>Big Tides (Full/New Moon)</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-400 inline-block"></span>Normal Tides</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber inline-block"></span>Gentle Tides</span>
+        </div>
+      </div>
+
+      <div id="sevenDayGrid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+        <!-- Populated dynamically -->
+      </div>
+    </section>
+
+    <!-- Fourth Row: All-India Locations Weather & Tide Forecast Directory -->
+    <section class="glass-card rounded-2xl p-5" id="allIndiaWeatherSection">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <i data-lucide="cloud-sun" class="w-5 h-5 text-amber"></i>
+            <h3 class="font-display font-bold text-base sm:text-lg text-slate-100">All-India Coastal &amp; Regional Weather Forecast (All 15 Locations)</h3>
+            <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">IMD / INCOIS Sync</span>
+          </div>
+          <p class="text-xs text-slate-300 mt-0.5">
+            Compare live air temperature, sky condition, rain chance, humidity, UV index &amp; tide state across every Indian location. Click any card to inspect.
+          </p>
+        </div>
+
+        <!-- Search & Condition Filter for All-India Weather -->
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="relative">
+            <input id="weatherSearchInput" type="text" placeholder="Search city, beach or state..." aria-label="Search Indian location weather" class="glass-pill text-xs text-slate-100 placeholder-slate-400 rounded-xl pl-8 pr-3 py-2 border border-white/20 focus:outline-none focus:border-sky-400 w-52 sm:w-64">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-sky-300 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          </div>
+          <select id="weatherSortSelect" aria-label="Sort All-India Weather" class="glass-pill text-xs font-semibold text-sky-200 rounded-xl px-3 py-2 border border-white/20 focus:outline-none cursor-pointer">
+            <option value="default">Sort: By Coastline</option>
+            <option value="tempDesc">Warmest First (°C)</option>
+            <option value="rainAsc">Lowest Rain Chance</option>
+            <option value="tideDesc">Highest Tide Swing</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Summary Weather Highlights Bar Across India -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+        <div class="p-3 rounded-xl glass-well flex items-center justify-between">
+          <div>
+            <span class="text-[11px] text-slate-400 block">Warmest Location Today</span>
+            <span id="warmestLocLabel" class="text-xs sm:text-sm font-bold text-amber">Rameswaram (32.0°C)</span>
+          </div>
+          <span class="text-xl">☀️</span>
+        </div>
+        <div class="p-3 rounded-xl glass-well flex items-center justify-between">
+          <div>
+            <span class="text-[11px] text-slate-400 block">Clearest Beach Skies</span>
+            <span id="clearestLocLabel" class="text-xs sm:text-sm font-bold text-teal-300">Goa &amp; Dwarka (5% Rain)</span>
+          </div>
+          <span class="text-xl">🌤️</span>
+        </div>
+        <div class="p-3 rounded-xl glass-well flex items-center justify-between">
+          <div>
+            <span class="text-[11px] text-slate-400 block">Rain / Shower Watch</span>
+            <span id="rainWatchLocLabel" class="text-xs sm:text-sm font-bold text-sky-300">Chennai &amp; Port Blair</span>
+          </div>
+          <span class="text-xl">🌦️</span>
+        </div>
+        <div class="p-3 rounded-xl glass-well flex items-center justify-between">
+          <div>
+            <span class="text-[11px] text-slate-400 block">Selected Station Weather</span>
+            <span id="selectedStationWeatherSummary" class="text-xs sm:text-sm font-bold text-white">29.4°C • Partly Cloudy</span>
+          </div>
+          <span id="selectedStationWeatherEmoji" class="text-xl">⛅</span>
+        </div>
+      </div>
+
+      <!-- All-India 15-Location Weather Cards Grid -->
+      <div id="allIndiaWeatherGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+        <!-- Populated dynamically by JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal 1: Add Custom Beach / Tide Spot -->
+  <div id="customStationModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+    <div class="glass-card rounded-2xl max-w-md w-full p-6 border border-sky-400/30 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="font-display font-bold text-lg text-slate-100">Add a Custom Beach or Port</h3>
+        <button id="closeCustomStationBtn" type="button" class="text-slate-400 hover:text-slate-200 p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-300">Add any local Indian beach, river mouth, or fishing jetty to track its tides.</p>
+      <form id="customStationForm" class="space-y-3.5">
+        <div>
+          <label for="customNameInput" class="block text-xs font-medium text-slate-200 mb-1">Beach or Port Name</label>
+          <input id="customNameInput" type="text" required placeholder="e.g., Bakkhali Beach, West Bengal" class="w-full bg-[#07111E] border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-400">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="customLatInput" class="block text-xs font-medium text-slate-200 mb-1">Latitude (°N)</label>
+            <input id="customLatInput" type="number" step="0.01" required value="21.56" class="w-full bg-[#07111E] border border-slate-700 rounded-xl px-3 py-2 text-sm font-mono text-slate-100 focus:outline-none focus:border-sky-400">
+          </div>
+          <div>
+            <label for="customLonInput" class="block text-xs font-medium text-slate-200 mb-1">Longitude (°E)</label>
+            <input id="customLonInput" type="number" step="0.01" required value="88.26" class="w-full bg-[#07111E] border border-slate-700 rounded-xl px-3 py-2 text-sm font-mono text-slate-100 focus:outline-none focus:border-sky-400">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="customM2Input" class="block text-xs font-medium text-slate-200 mb-1">Tide Swing Size (m)</label>
+            <input id="customM2Input" type="number" step="0.1" min="0.2" max="6.0" required value="1.5" class="w-full bg-[#07111E] border border-slate-700 rounded-xl px-3 py-2 text-sm font-mono text-slate-100 focus:outline-none focus:border-sky-400">
+            <span class="text-[10px] text-slate-400">0.5 = Small, 1.5 = Medium, 2.5+ = Big</span>
+          </div>
+          <div>
+            <label for="customPhaseInput" class="block text-xs font-medium text-slate-200 mb-1">Time Shift (Hours)</label>
+            <input id="customPhaseInput" type="number" step="0.5" min="-12" max="12" required value="1.5" class="w-full bg-[#07111E] border border-slate-700 rounded-xl px-3 py-2 text-sm font-mono text-slate-100 focus:outline-none focus:border-sky-400">
+            <span class="text-[10px] text-slate-400">Shift high tide earlier/later</span>
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button id="cancelCustomStationBtn" type="button" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-800 transition">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-sky-500 hover:bg-sky-400 text-slate-950 transition">Save Station</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2: Add Beach / Trip Note -->
+  <div id="logSessionModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+    <div class="glass-card rounded-2xl max-w-md w-full p-6 border border-teal-400/30 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="font-display font-bold text-lg text-slate-100">Add a Beach or Fishing Note</h3>
+        <button id="closeLogModalBtn" type="button" class="text-slate-400 hover:text-slate-200 p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-300">Saves your note along with the selected time and water height automatically.</p>
+      <form id="logSessionForm" class="space-y-3">
+        <div>
+          <label for="logActivityType" class="block text-xs font-medium text-slate-200 mb-1">Activity</label>
+          <select id="logActivityType" class="w-full bg-[#07111E] border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-teal-400">
+            <option value="Beach Visit">Beach Walk / Visit</option>
+            <option value="Surf Session">Surfing / Swimming</option>
+            <option value="Harbor Transit">Boating / Ferry Crossing</option>
+            <option value="Shore Angling">Fishing</option>
+          </select>
+        </div>
+        <div>
+          <label for="logNotesInput" class="block text-xs font-medium text-slate-200 mb-1">Your Note</label>
+          <input id="logNotesInput" type="text" required placeholder="e.g., Water reached the upper seawall steps at high tide" class="w-full bg-[#07111E] border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-teal-400">
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button id="cancelLogModalBtn" type="button" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-800 transition">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-teal-400 hover:bg-teal-300 text-slate-950 transition">Record Entry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Banner -->
+  <div id="toastBanner" class="fixed bottom-5 right-5 z-50 hidden items-center gap-2.5 px-4 py-3 rounded-xl glass-card text-xs font-medium text-slate-100 shadow-2xl">
+    <i data-lucide="check-circle-2" class="w-4 h-4 text-teal-400"></i>
+    <span id="toastMessage">Tide summary copied to clipboard</span>
+  </div>
+
+  <script>
+    // --- 1. Indian Coastal Reference Stations (All 15 Stations Across India) ---
+    const DEFAULT_STATIONS = [
+      {
+        id: 'sagar-wb',
+        coast: 'east',
+        name: 'Sagar Island (Hooghly Estuary), West Bengal',
+        code: 'INCOIS-WB-SGR',
+        coords: '21.65° N, 88.05° E',
+        regime: 'Big Tide Swing • Bay of Bengal',
+        tzLabel: 'IST (UTC+5:30)',
+        msl: 2.35,
+        m2: 1.62,
+        s2: 0.58,
+        n2: 0.31,
+        k1: 0.24,
+        o1: 0.14,
+        phaseOffsetHours: 1.8,
+        swell: '1.4m (Moderate)',
+        swellDir: 'Every 11s • SSW',
+        wind: '20 km/h',
+        windDir: 'Gentle NNW Breeze',
+        waterTempC: 28.2,
+        pressureHpa: 1011,
+        sunrise: '5:49 AM',
+        sunset: '5:26 PM'
+      },
+      {
+        id: 'digha-wb',
+        coast: 'east',
+        name: 'Digha & Mandarmani Beach, West Bengal',
+        code: 'INCOIS-WB-DGH',
+        coords: '21.63° N, 87.51° E',
+        regime: 'Medium-Big Tides • Bay of Bengal',
+        tzLabel: 'IST (UTC+5:30)',
+        msl: 2.10,
+        m2: 1.44,
+        s2: 0.51,
+        n2: 0.27,
+        k1: 0.21,
+        o1: 0.12,
+        phaseOffsetHours: 1.2,
+        swell: '1.2m (Gentle)',
+        swellDir: 'Every 10s • South',
+        wind: '17 km/h',
+        windDir: 'Light NW Breeze',
+        waterTempC: 28.5,
+        pressureHpa: 1012,
+        sunrise: '5:52 AM',
+        sunset: '5:29 PM'
+      },
+      {
+        id: 'diamond-wb',
+        coast: 'east',
+        name: 'Diamond Harbour & Haldia, West Bengal',
+        code: 'NHO-WB-DMH',
+        coords: '22.19° N, 88.19° E',
+        regime: 'Strong River Tide • Hooghly',
+        tzLabel: 'IST (UTC+5:30)',
+        msl: 2.68,
+        m2: 1.86,
+        s2: 0.67,
+        n2: 0.35,
+        k1: 0.26,
+        o1: 0.15,
+        phaseOffsetHours: 2.9,
+        swell: '0.8m (Calm)',
+        swellDir: 'River Channel',
+        wind: '15 km/h',
+        windDir: 'Light Breeze',
+        waterTempC: 28.0,
+        pressureHpa: 1011,
+        sunrise: '5:48 AM',
+        sunset: '5:25 PM'
+      },
+      {
+        id: 'paradip-od',
+        coast: 'east',
+        name: 'Puri & Paradip Coast, Odisha',
+        code: 'INCOIS-OD-PRD',
+        coords: '20.26° N, 86.70° E',
+        regime: 'Moderate Tides • Bay of Bengal',
+        tzLabel: 'IST (UTC+5:30)',
+        msl: 1.66,
+        m2: 0.96,
+        s2: 0.36,
+        n2: 0.19,
+        k1: 0.20,
+        o1: 0.11,
+        phaseOffsetHours: 0.8,
+        swell: '1.6m (Moderate)',
+        swellDir: 'Every 12s • SSE',
+        wind: '22 km/h',
+        windDir: 'Fresh NE Breeze',
+        waterTempC: 28.6,
+        pressureHpa: 1012,
+        sunrise: '5:55 AM',
+        sunset: '5:34 PM'
+      },
+      {
+        id: 'vizag-ap',
+        coast: 'east',
+        name: 'Visakhapatnam (Rushikonda), Andhra Pradesh',
+        code: 'INCOIS-AP-VTZ',
+        coords: '17.69° N, 83.22° E',
+        regime: 'Gentle-Moderate Tides • East Coast',
+        tzLabel: 'IST (UTC+5:30)',
+        msl: 0.88,
+        m2: 0.54,
+        s2: 0.21,
+        n2: 0.11,
+        k1: 0.16,
+        o1: 0.08,
+        phaseOffsetHours: 0.3,
+        swell: '1.7m (Moderate)',
+        swellDir: 'Every 12s • SE',
+        wind: '20 km/h',
+        windDir: 'Clean WNW Wind',
+        waterTempC: 28.9,
+        pressureHpa: 1011,
+        sunrise: '6:04 AM',
+        sunset: '5:49 PM'
+      },
+      {
+        id: 'chennai-tn',
+        coast: 'east',
+        name: 'Chennai & Kovalam Beach, Tamil Nadu',
+        code: 'INCOIS-TN-MAA',
+        coords: '13.08° N, 80.27° E',
+        regime: 'Gentle Tides • Coromandel Coast',
+        tzLabel: 'IST (UTC+5:30)',
+        msl: 0.68,
+        m2: 0.41,
+        s2: 0.16,
+        n2: 0.09,
+        k1: 0.12,
+        o1: 0.06,
+        phaseOffsetHours: -0.2,
+        swell: '1.5m (Surfable)',
+        swellDir: 'Every 11s • East',
+        wind: '24 km/h',
+        windDir: 'Sea Breeze NE',
+        waterTempC: 29.1,
+        pressureHpa: 1010,
+        sunrise: '6:01 AM',
+        sunset: '5:52 PM'
+      },
+      {
+        id: 'sydney-au',
+        coast: 'east',
+        name: 'Rameswaram & Pamban Pass, Tamil Nadu',
+        code: 'INCOIS-TN-RMM',
+        coords: '9.29° N, 79.31° E',
+        regime: 'Small Tides • Gulf of Mannar',
+        tzLabel: 'IST (UTC+5:30)',
+        msl: 0.58,
+        m2: 0.32,
+        s2: 0.12,
+        n2: 0.07,
+        k1: 0.14,
+        o1: 0.07,
+        phaseOffsetHours: 1.1,
+        swell: '1.2m (Calm-Mod)',
+        swellDir: 'Every 10s • SE',
+        wind: '25 km/h',
+        windDir: 'Breezy East',
+        waterTempC: 29.3,
+        pressureHpa: 1010,
+        sunrise: '6:06 AM',
+        sunset: '6:01 PM'
+      },
+      {
+        id: 'mumbai-in',
+        coast: 'west',
+        name: 'Mumbai (Gateway / Juhu / Versova), Maharashtra',
+        code: 'INCOIS-MH-BOM',
+        coords: '18.92° N, 72.83° E',
+        regime: 'Big Tide Swing • Arabian Sea',
+        tzLabel: 'IST (UTC+5:30)',
+        msl: 2.51,
+        m2: 1.48,
+        s2: 0.54,
+        n2: 0.29,
+        k1: 0.42,
+        o1: 0.21,
+        phaseOffsetHours: 4.1,
+        swell: '1.6m (Moderate)',
+        swellDir: 'Every 12s • WSW',
+        wind: '24 km/h',
+        windDir: 'Sea Breeze WNW',
+        waterTempC: 27.9,
+        pressureHpa: 1010,
+        sunrise: '6:32 AM',
+        sunset: '6:14 PM'
+      },
+      {
+        id: 'st-ives-uk',
+        coast: 'west',
+        name: 'Bhavnagar (Gulf of Khambhat), Gujarat',
+        code: 'NHO-GJ-BHV',
+        coords: '21.76° N, 72.15° E',
+        regime: 'India’s Biggest Tides (Up to 10m)',
+        tzLabel: 'IST (UTC+5:30)',
+        msl: 5.40,
+        m2: 3.45,
+        s2: 1.18,
+        n2: 0.62,
+        k1: 0.58,
+        o1: 0.28,
+        phaseOffsetHours: 5.9,
+        swell: '1.1m (Fast Current)',
+        swellDir: 'Gulf Funnel SSW',
+        wind: '27 km/h',
+        windDir: 'Breezy SW',
+        waterTempC: 27.5,
+        pressureHpa: 1011,
+        sunrise: '6:38 AM',
+        sunset: '6:16 PM'
+      },
+      {
+        id: 'kandla-gj',
+        coast: 'west',
+        name: 'Okha, Dwarka & Kandla (Gulf of Kutch), Gujarat',
+        code: 'NHO-GJ-KDL',
+        coords: '23.00° N, 70.22° E',
+        regime: 'Very Large Tides • Gujarat Coast',
+        tzLabel: 'IST (UTC+5:30)',
+        msl: 3.85,
+        m2: 2.42,
+        s2: 0.81,
+        n2: 0.44,
+        k1: 0.48,
+        o1: 0.24,
+        phaseOffsetHours: 5.4,
+        swell: '1.3m (Moderate)',
+        swellDir: 'Every 10s • SW',
+        wind: '25 km/h',
+        windDir: 'Steady WNW',
+        waterTempC: 27.2,
+        pressureHpa: 1012,
+        sunrise: '6:46 AM',
+        sunset: '6:22 PM'
+      },
+      {
+        id: 'mormugao-ga',
+        coast: 'west',
+        name: 'Goa (Panaji, Calangute & Palolem)',
+        code: 'INCOIS-GA-GOI',
+        coords: '15.41° N, 73.80° E',
+        regime: 'Moderate Beach Tides • Goa',
+        tzLabel: 'IST (UTC+5:30)',
+        msl: 1.32,
+        m2: 0.68,
+        s2: 0.24,
+        n2: 0.14,
+        k1: 0.34,
+        o1: 0.17,
+        phaseOffsetHours: 3.5,
+        swell: '1.5m (Pleasant)',
+        swellDir: 'Every 11s • West',
+        wind: '18 km/h',
+        windDir: 'Gentle ENE',
+        waterTempC: 28.4,
+        pressureHpa: 1011,
+        sunrise: '6:26 AM',
+        sunset: '6:13 PM'
+      },
+      {
+        id: 'mangalore-ka',
+        coast: 'west',
+        name: 'Mangalore, Udupi & Gokarna, Karnataka',
+        code: 'INCOIS-KA-IXE',
+        coords: '12.93° N, 74.81° E',
+        regime: 'Gentle-Moderate Tides • Karnataka',
+        tzLabel: 'IST (UTC+5:30)',
+        msl: 1.05,
+        m2: 0.52,
+        s2: 0.19,
+        n2: 0.10,
+        k1: 0.29,
+        o1: 0.15,
+        phaseOffsetHours: 3.1,
+        swell: '1.6m (Clean Surf)',
+        swellDir: 'Every 12s • SW',
+        wind: '16 km/h',
+        windDir: 'Light Offshore E',
+        waterTempC: 28.7,
+        pressureHpa: 1011,
+        sunrise: '6:20 AM',
+        sunset: '6:10 PM'
+      },
+      {
+        id: 'kochi-kl',
+        coast: 'west',
+        name: 'Kochi, Varkala & Kovalam, Kerala',
+        code: 'INCOIS-KL-COK',
+        coords: '9.97° N, 76.27° E',
+        regime: 'Gentle Tides • Kerala Coast',
+        tzLabel: 'IST (UTC+5:30)',
+        msl: 0.64,
+        m2: 0.31,
+        s2: 0.11,
+        n2: 0.06,
+        k1: 0.21,
+        o1: 0.10,
+        phaseOffsetHours: 2.6,
+        swell: '1.8m (Good Surf)',
+        swellDir: 'Every 13s • SSW',
+        wind: '18 km/h',
+        windDir: 'Light NE Wind',
+        waterTempC: 28.9,
+        pressureHpa: 1010,
+        sunrise: '6:13 AM',
+        sunset: '6:06 PM'
+      },
+      {
+        id: 'portblair-an',
+        coast: 'islands',
+        name: 'Port Blair & Havelock (Swaraj Dweep), Andaman',
+        code: 'INCOIS-AN-IXZ',
+        coords: '11.67° N, 92.75° E',
+        regime: 'Clear Island Reef Tides • Andaman',
+        tzLabel: 'IST (UTC+5:30)',
+        msl: 1.28,
+        m2: 0.78,
+        s2: 0.32,
+        n2: 0.16,
+        k1: 0.18,
+        o1: 0.09,
+        phaseOffsetHours: -0.9,
+        swell: '1.9m (Island Swell)',
+        swellDir: 'Every 13s • SW',
+        wind: '20 km/h',
+        windDir: 'East Trade Wind',
+        waterTempC: 29.0,
+        pressureHpa: 1010,
+        sunrise: '5:18 AM',
+        sunset: '5:04 PM'
+      },
+      {
+        id: 'sf-usa',
+        coast: 'islands',
+        name: 'Kavaratti & Agatti Lagoon, Lakshadweep',
+        code: 'INCOIS-LD-KVR',
+        coords: '10.57° N, 72.64° E',
+        regime: 'Calm Lagoon Tides • Lakshadweep',
+        tzLabel: 'IST (UTC+5:30)',
+        msl: 0.95,
+        m2: 0.46,
+        s2: 0.18,
+        n2: 0.10,
+        k1: 0.25,
+        o1: 0.13,
+        phaseOffsetHours: 3.3,
+        swell: '1.5m (Outer Reef)',
+        swellDir: 'Every 12s • SW',
+        wind: '18 km/h',
+        windDir: 'Gentle WNW',
+        waterTempC: 29.2,
+        pressureHpa: 1011,
+        sunrise: '6:28 AM',
+        sunset: '6:21 PM'
+      }
+    ];
+
+    // --- 2. Application State ---
+    const state = {
+      stations: [...DEFAULT_STATIONS],
+      selectedStationId: 'sagar-wb',
+      selectedDateStr: '2026-10-15',
+      scrubMinutes: 23 * 60 + 35, // 11:35 PM IST
+      unit: 'm',
+      datum: 'MLLW',
+      activityOverlay: 'none',
+      plannerMinDepthM: 1.5,
+      coastFilter: 'all',
+      favorites: ['sagar-wb', 'digha-wb', 'mumbai-in', 'mormugao-ga'],
+      filterFavoritesOnly: false,
+      logs: [
+        {
+          id: 'log-1',
+          stationName: 'Sagar Island, WB',
+          activity: 'Boating / Ferry Crossing',
+          timeStr: '10:30 AM',
+          heightM: 3.68,
+          notes: 'Plenty of water depth for ferry crossing over the sandbar.'
+        },
+        {
+          id: 'log-2',
+          stationName: 'Digha Beach, WB',
+          activity: 'Beach Walk / Visit',
+          timeStr: '03:15 PM',
+          heightM: 0.78,
+          notes: 'Wide sandy beach exposed during low tide—great for walking.'
+        }
+      ]
+    };
+
+    try {
+      const savedFavs = localStorage.getItem('marea_favorites');
+      if (savedFavs) state.favorites = JSON.parse(savedFavs);
+      const savedCustom = localStorage.getItem('marea_custom_stations');
+      if (savedCustom) {
+        const parsed = JSON.parse(savedCustom);
+        if (Array.isArray(parsed)) state.stations = [...DEFAULT_STATIONS, ...parsed];
+      }
+      const savedLogs = localStorage.getItem('marea_logs');
+      if (savedLogs) state.logs = JSON.parse(savedLogs);
+    } catch (e) {
+      // Ignore storage errors in sandbox
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem('marea_favorites', JSON.stringify(state.favorites));
+        const customOnly = state.stations.filter(s => s.isCustom);
+        localStorage.setItem('marea_custom_stations', JSON.stringify(customOnly));
+        localStorage.setItem('marea_logs', JSON.stringify(state.logs));
+      } catch (e) {
+        // Ignore storage errors
+      }
+    }
+
+    // --- 3. Harmonic Tide Engine ---
+    const SPEEDS_RAD_HR = {
+      M2: (28.9841042 * Math.PI) / 180,
+      S2: (30.0 * Math.PI) / 180,
+      N2: (28.4397295 * Math.PI) / 180,
+      K1: (15.0410686 * Math.PI) / 180,
+      O1: (13.9430356 * Math.PI) / 180
+    };
+
+    function getDaysSinceEpoch(dateStr) {
+      const parts = dateStr.split('-').map(Number);
+      const target = Date.UTC(parts[0], parts[1] - 1, parts[2], 0, 0, 0);
+      const epoch = Date.UTC(2026, 9, 10, 0, 0, 0);
+      return (target - epoch) / (1000 * 3600 * 24);
+    }
+
+    function getLunarInfo(dateStr) {
+      const synodicMonth = 29.53058867;
+      const days = getDaysSinceEpoch(dateStr);
+      let lunarAge = ((days % synodicMonth) + synodicMonth) % synodicMonth;
+      const phaseRatio = lunarAge / synodicMonth;
+      const illum = 0.5 * (1 - Math.cos(2 * Math.PI * phaseRatio)) * 100;
+      const springNeapFactor = Math.cos(4 * Math.PI * phaseRatio);
+      const coeff = Math.round(72 + 34 * springNeapFactor);
+
+      let phaseName = 'Waxing Crescent Moon';
+      if (lunarAge < 1.8) phaseName = 'New Moon (Big Tides)';
+      else if (lunarAge < 5.5) phaseName = 'Waxing Crescent Moon';
+      else if (lunarAge < 9.2) phaseName = 'Half Moon (Gentle Tides)';
+      else if (lunarAge < 12.9) phaseName = 'Waxing Gibbous Moon';
+      else if (lunarAge < 16.6) phaseName = 'Full Moon (Big Tides)';
+      else if (lunarAge < 20.3) phaseName = 'Waning Gibbous Moon';
+      else if (lunarAge < 24.0) phaseName = 'Half Moon (Gentle Tides)';
+      else if (lunarAge < 27.7) phaseName = 'Waning Crescent Moon';
+      else phaseName = 'New Moon (Big Tides)';
+
+      return { lunarAge, phaseRatio, illum, coeff, phaseName, springNeapFactor };
+    }
+
+    function getDatumOffsetMeters(station) {
+      if (state.datum === 'MSL') return 0;
+      if (state.datum === 'LAT') return station.msl + 0.28;
+      return station.msl;
+    }
+
+    function computeTideHeightMeters(station, dateStr, minuteOfDay) {
+      const days = getDaysSinceEpoch(dateStr);
+      const totalHours = days * 24 + minuteOfDay / 60 - station.phaseOffsetHours;
+
+      const hM2 = station.m2 * Math.cos(SPEEDS_RAD_HR.M2 * totalHours);
+      const hS2 = station.s2 * Math.cos(SPEEDS_RAD_HR.S2 * totalHours - 0.35);
+      const hN2 = station.n2 * Math.cos(SPEEDS_RAD_HR.N2 * totalHours + 0.6);
+      const hK1 = station.k1 * Math.cos(SPEEDS_RAD_HR.K1 * totalHours - 0.2);
+      const hO1 = station.o1 * Math.cos(SPEEDS_RAD_HR.O1 * totalHours + 0.4);
+
+      const datumBase = getDatumOffsetMeters(station);
+      return datumBase + hM2 + hS2 + hN2 + hK1 + hO1;
+    }
+
+    function formatHeight(meters, includeUnit = true) {
+      const val = state.unit === 'ft' ? meters * 3.28084 : meters;
+      const formatted = `${val.toFixed(2)}`;
+      return includeUnit ? `${formatted} ${state.unit}` : formatted;
+    }
+
+    function formatMinutesToHHMM(mins) {
+      const clamped = Math.max(0, Math.min(1439, Math.round(mins)));
+      const h = Math.floor(clamped / 60);
+      const m = clamped % 60;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
+
+    function formatMinutesTo12Hr(mins) {
+      const clamped = Math.max(0, Math.min(1439, Math.round(mins)));
+      const h24 = Math.floor(clamped / 60);
+      const m = clamped % 60;
+      const period = h24 >= 12 ? 'PM' : 'AM';
+      const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+      return `${h12}:${String(m).padStart(2, '0')} ${period}`;
+    }
+
+    function findDayExtremes(station, dateStr) {
+      const samples = [];
+      for (let m = -360; m <= 1800; m += 2) {
+        samples.push({
+          m,
+          h: computeTideHeightMeters(station, dateStr, m)
+        });
+      }
+      const extremes = [];
+      for (let i = 1; i < samples.length - 1; i++) {
+        const prev = samples[i - 1].h;
+        const curr = samples[i].h;
+        const next = samples[i + 1].h;
+        if (curr >= prev && curr > next) {
+          extremes.push({ type: 'HIGH', minute: samples[i].m, heightM: curr });
+        } else if (curr <= prev && curr < next) {
+          extremes.push({ type: 'LOW', minute: samples[i].m, heightM: curr });
+        }
+      }
+      return extremes;
+    }
+
+    // --- 4. UI Rendering Functions ---
+    function getCurrentStation() {
+      return state.stations.find(s => s.id === state.selectedStationId) || state.stations[0];
+    }
+
+    function renderStationSelect() {
+      const select = document.getElementById('stationSelect');
+      let list = state.stations;
+      if (state.coastFilter !== 'all') {
+        list = list.filter(s => (s.coast || 'east') === state.coastFilter);
+      }
+      if (state.filterFavoritesOnly) {
+        list = list.filter(s => state.favorites.includes(s.id));
+      }
+
+      const activeList = list.length > 0 ? list : state.stations;
+      if (!activeList.some(s => s.id === state.selectedStationId)) {
+        state.selectedStationId = activeList[0].id;
+      }
+
+      select.innerHTML = activeList.map(st => {
+        const isFav = state.favorites.includes(st.id) ? '★ ' : '';
+        return `<option value="${st.id}" ${st.id === state.selectedStationId ? 'selected' : ''}>${isFav}${st.name}</option>`;
+      }).join('');
+
+      const isCurrentFav = state.favorites.includes(state.selectedStationId);
+      const starBtn = document.getElementById('favStationBtn');
+      starBtn.className = `px-2.5 py-2 rounded-xl border flex items-center gap-1 text-xs font-medium transition ${
+        isCurrentFav
+          ? 'bg-amber/15 border-amber/40 text-amber'
+          : 'glass-pill border-sky-400/20 text-slate-300 hover:text-amber'
+      }`;
+
+      const favLabel = document.getElementById('filterFavsLabel');
+      favLabel.textContent = state.filterFavoritesOnly
+        ? `Showing Saved (${state.favorites.length})`
+        : `Saved Beaches (${state.favorites.length})`;
+    }
+
+    function renderMoonSvg(phaseRatio) {
+      const r = 24;
+      const cx = 30;
+      const cy = 30;
+      const isWaxing = phaseRatio <= 0.5;
+      const k = Math.cos(2 * Math.PI * phaseRatio);
+      const rx = Math.abs(k) * r;
+      const sweepOuter = isWaxing ? 1 : 0;
+      const sweepInner = k > 0 ? (isWaxing ? 0 : 1) : (isWaxing ? 1 : 0);
+
+      const d = `M ${cx} ${cy - r} A ${r} ${r} 0 0 ${sweepOuter} ${cx} ${cy + r} A ${rx} ${r} 0 0 ${sweepInner} ${cx} ${cy - r} Z`;
+
+      return `
+        <svg viewBox="0 0 60 60" class="w-14 h-14">
+          <circle cx="${cx}" cy="${cy}" r="${r}" fill="#0E1E32" stroke="#38BDF8" stroke-opacity="0.35" stroke-width="1.5"/>
+          <path d="${d}" fill="#FBBF24" fill-opacity="0.9"/>
+          <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#F0F6FC" stroke-opacity="0.2" stroke-width="1"/>
+        </svg>
+      `;
+    }
+
+    function renderMainDashboard() {
+      const station = getCurrentStation();
+      const dateStr = state.selectedDateStr;
+      const minute = state.scrubMinutes;
+
+      document.getElementById('stationCoordsText').textContent = station.coords;
+      document.getElementById('stationIdText').textContent = station.code;
+      document.getElementById('stationRegimeText').textContent = station.regime;
+      document.getElementById('stationTzText').textContent = station.tzLabel;
+      document.getElementById('dateInput').value = dateStr;
+
+      const currentHeightM = computeTideHeightMeters(station, dateStr, minute);
+      const nextHeightM = computeTideHeightMeters(station, dateStr, minute + 15);
+      const slopeMetersPerHr = (nextHeightM - currentHeightM) * 4;
+      const isRising = slopeMetersPerHr >= 0;
+
+      const time12 = formatMinutesTo12Hr(minute);
+      const time24 = formatMinutesToHHMM(minute);
+      document.getElementById('readoutClockLabel').textContent = `${time12} (${time24} IST)`;
+      document.getElementById('scrubberTimeBadge').textContent = time12;
+      document.getElementById('timeScrubber').value = String(minute);
+
+      document.getElementById('heroTideHeight').textContent = formatHeight(currentHeightM, false);
+      document.getElementById('heroTideUnit').textContent = state.unit;
+
+      const slopeConverted = Math.abs(state.unit === 'ft' ? slopeMetersPerHr * 3.28084 : slopeMetersPerHr);
+      const directionWord = Math.abs(slopeMetersPerHr) < 0.05 ? 'Steady' : isRising ? 'Rising ↑' : 'Falling ↓';
+      document.getElementById('heroDatumSubtext').innerHTML = `Speed: <span class="text-slate-100 font-semibold">${directionWord} ${slopeConverted.toFixed(2)} ${state.unit}/hr</span>`;
+
+      const badge = document.getElementById('tideDirectionBadge');
+      const stateText = document.getElementById('tideStateText');
+      if (Math.abs(slopeMetersPerHr) < 0.05) {
+        badge.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-amber/15 text-amber border border-amber/30';
+        stateText.textContent = 'Turning (Calm Water)';
+      } else if (isRising) {
+        badge.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-teal-500/15 text-teal-300 border border-teal-400/30';
+        stateText.textContent = 'Tide Coming In ↑';
+      } else {
+        badge.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-sky-500/15 text-sky-300 border border-sky-400/30';
+        stateText.textContent = 'Tide Going Out ↓';
+      }
+
+      // Compute Day Extremes
+      const allExtremes = findDayExtremes(station, dateStr);
+      const dayExtremes = allExtremes.filter(e => e.minute >= 0 && e.minute < 1440);
+
+      const heights = dayExtremes.map(e => e.heightM);
+      const maxH = Math.max(...heights, currentHeightM + 0.5, 2.5);
+      const minH = Math.min(...heights, currentHeightM - 0.5, 0.0);
+      const fillPct = Math.max(8, Math.min(95, ((currentHeightM - minH) / (maxH - minH || 1)) * 100));
+      document.getElementById('verticalGaugeFill').style.height = `${fillPct.toFixed(0)}%`;
+      document.getElementById('gaugeMaxLabel').textContent = formatHeight(maxH, true);
+      document.getElementById('gaugeMidLabel').textContent = formatHeight((maxH + minH) / 2, true);
+      document.getElementById('gaugeMinLabel').textContent = formatHeight(minH, true);
+
+      let prevExt = allExtremes[0];
+      let nextExt = allExtremes[allExtremes.length - 1];
+      for (let i = 0; i < allExtremes.length; i++) {
+        if (allExtremes[i].minute <= minute) prevExt = allExtremes[i];
+        if (allExtremes[i].minute > minute) {
+          nextExt = allExtremes[i];
+          break;
+        }
+      }
+
+      const minsToNext = Math.max(0, nextExt.minute - minute);
+      const hrsLeft = Math.floor(minsToNext / 60);
+      const minsLeft = Math.round(minsToNext % 60);
+      const spanTotal = Math.max(1, nextExt.minute - prevExt.minute);
+      const progressPct = Math.max(2, Math.min(99, ((minute - prevExt.minute) / spanTotal) * 100));
+
+      const nextTypeLabel = nextExt.type === 'HIGH' ? 'High Tide' : 'Low Tide';
+      const prevTypeLabel = prevExt.type === 'HIGH' ? 'High Tide' : 'Low Tide';
+      document.getElementById('nextExtremeLabel').textContent = `Next ${nextTypeLabel}`;
+      document.getElementById('nextExtremeCountdown').textContent = `in ${hrsLeft}h ${String(minsLeft).padStart(2, '0')}m`;
+      document.getElementById('cycleProgressBar').style.width = `${progressPct.toFixed(1)}%`;
+
+      const prevTime12 = formatMinutesTo12Hr(((prevExt.minute % 1440) + 1440) % 1440);
+      const nextTime12 = formatMinutesTo12Hr(((nextExt.minute % 1440) + 1440) % 1440);
+      document.getElementById('prevExtremeSummary').textContent = `Last ${prevTypeLabel}: ${prevTime12} (${formatHeight(prevExt.heightM)})`;
+      document.getElementById('nextExtremeSummary').textContent = `Next ${nextTypeLabel}: ${nextTime12} (${formatHeight(nextExt.heightM)})`;
+
+      // Update Plain-English Top Banner
+      const shortName = station.name.split(',')[0];
+      const statePhrase = Math.abs(slopeMetersPerHr) < 0.05
+        ? 'turning and calm'
+        : isRising
+          ? 'coming in (Rising ↑)'
+          : 'going out (Falling ↓)';
+      document.getElementById('plainEnglishSummary').innerHTML =
+        `At <strong>${shortName}</strong> (${time12}), the tide is <strong>${statePhrase}</strong> with a water height of <strong>${formatHeight(currentHeightM)}</strong>. The next <strong>${nextTypeLabel}</strong> is in <strong>${hrsLeft} hr ${minsLeft} min</strong> at <strong>${nextTime12}</strong> (${formatHeight(nextExt.heightM)}).`;
+
+      const advicePill = document.getElementById('plainAdvicePill');
+      if (fillPct < 38) {
+        advicePill.textContent = 'Great for Beach Walks & Tidepools (Low Water)';
+        advicePill.className = 'text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber/15 text-amber border border-amber/30';
+      } else if (isRising && fillPct >= 38 && fillPct <= 78) {
+        advicePill.textContent = 'Ideal for Surfing, Swimming & Fishing';
+        advicePill.className = 'text-xs font-semibold px-2.5 py-0.5 rounded-full bg-teal-500/15 text-teal-300 border border-teal-400/30';
+      } else {
+        advicePill.textContent = 'Deep Water — Good for Boats & Ferries';
+        advicePill.className = 'text-xs font-semibold px-2.5 py-0.5 rounded-full bg-sky-500/15 text-sky-300 border border-sky-400/30';
+      }
+
+      // Render Simple 6-Hour Flow Speed Stages
+      const twelfthsWeights = [1, 2, 3, 3, 2, 1];
+      const speedWords = ['Slow', 'Medium', 'Fastest', 'Fastest', 'Medium', 'Slow'];
+      const activeHourIdx = Math.min(5, Math.max(0, Math.floor((progressPct / 100) * 6)));
+      document.getElementById('twelfthsActiveBadge').textContent = `${speedWords[activeHourIdx]} Flow (Hour ${activeHourIdx + 1} of 6)`;
+
+      const twelfthsHtml = twelfthsWeights.map((w, idx) => {
+        const isCurrent = idx === activeHourIdx;
+        const barH = w * 10;
+        return `
+          <div class="p-2 rounded-xl border text-center transition ${
+            isCurrent
+              ? 'bg-sky-500/25 border-sky-400 text-white shadow'
+              : 'glass-well text-slate-300'
+          }">
+            <div class="h-8 flex items-end justify-center mb-1">
+              <div class="w-3.5 rounded-t ${isCurrent ? 'bg-teal-400' : 'bg-slate-600'}" style="height:${barH}px"></div>
+            </div>
+            <div class="text-[10px] font-semibold">${speedWords[idx]}</div>
+            <div class="text-[9px] font-mono opacity-75">Hr ${idx + 1}</div>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('twelfthsGrid').innerHTML = twelfthsHtml;
+
+      // Render High & Low Tide Schedule Table
+      const tbody = document.getElementById('extremesTableBody');
+      let maxSwing = 0;
+      tbody.innerHTML = dayExtremes.map((ext, i) => {
+        const prev = i > 0 ? dayExtremes[i - 1] : prevExt;
+        const swing = ext.heightM - prev.heightM;
+        if (Math.abs(swing) > maxSwing) maxSwing = Math.abs(swing);
+        const isHigh = ext.type === 'HIGH';
+        const swingSign = swing >= 0 ? '+' : '';
+        return `
+          <tr class="hover:bg-sky-500/10 transition cursor-pointer" data-scrub-minute="${ext.minute}">
+            <td class="py-3 px-2">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold ${
+                isHigh ? 'bg-sky-500/20 text-sky-300 border border-sky-400/30' : 'bg-teal-500/20 text-teal-300 border border-teal-400/30'
+              }">
+                ${isHigh ? '▲ High Tide' : '▼ Low Tide'}
+              </span>
+            </td>
+            <td class="py-3 px-2 text-slate-100 font-semibold">
+              ${formatMinutesTo12Hr(ext.minute)}
+              <span class="block text-[11px] font-mono text-slate-400">${formatMinutesToHHMM(ext.minute)} IST</span>
+            </td>
+            <td class="py-3 px-2 text-right font-mono font-bold text-slate-100">${formatHeight(ext.heightM)}</td>
+            <td class="py-3 px-2 text-right font-mono text-xs ${swing >= 0 ? 'text-teal-300' : 'text-sky-300'}">${swingSign}${formatHeight(swing)}</td>
+            <td class="py-3 px-2 text-right">
+              <button type="button" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-sky-500 hover:text-slate-950 text-sky-300 transition" data-scrub-minute="${ext.minute}">
+                Show
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById('meanRangeBadge').textContent = `Tide Swing: ${formatHeight(maxSwing)}`;
+      const swingCategory = station.m2 >= 1.8 ? 'Very Large Tide Swing (Caution on Sandbars)' : station.m2 >= 1.0 ? 'Medium-Large Twice-Daily Tides' : 'Gentle Twice-Daily Tides';
+      document.getElementById('constituentsSummary').textContent = swingCategory;
+
+      // Lunar & Weather Telemetry
+      const lunar = getLunarInfo(dateStr);
+      const regimeWord = lunar.coeff >= 85 ? 'Big Tides Today' : lunar.coeff < 55 ? 'Gentle Tides Today' : 'Normal Tides Today';
+      document.getElementById('coeffPill').textContent = `${regimeWord} (Strength ${lunar.coeff}/120)`;
+      document.getElementById('springNeapTag').textContent = lunar.phaseName;
+      document.getElementById('lunarIllumText').textContent = `${Math.round(lunar.illum)}% Lit`;
+      document.getElementById('lunarAgeText').textContent = `Day ${Math.round(lunar.lunarAge)} of 29`;
+      document.getElementById('gravPullText').textContent = `${regimeWord} (${lunar.coeff}/120)`;
+      document.getElementById('lunarSvgContainer').innerHTML = renderMoonSvg(lunar.phaseRatio);
+
+      document.getElementById('swellHeightText').textContent = station.swell;
+      document.getElementById('swellDirText').textContent = station.swellDir;
+      document.getElementById('windSpeedText').textContent = station.wind;
+      document.getElementById('windDirText').textContent = station.windDir;
+      const tempVal = state.unit === 'ft' ? `${(station.waterTempC * 1.8 + 32).toFixed(1)}°F` : `${station.waterTempC.toFixed(1)}°C`;
+      document.getElementById('waterTempText').textContent = tempVal;
+      document.getElementById('barometerText').textContent = station.waterTempC >= 27 ? 'Warm Tropical Water' : 'Pleasant Water';
+      document.getElementById('sunEnvelopeText').textContent = `${station.sunrise} – ${station.sunset}`;
+
+      // Weather forecast for active station
+      const wx = getStationWeather(station, dateStr);
+      document.getElementById('stationWeatherEmoji').textContent = wx.emoji;
+      document.getElementById('stationAirTempText').textContent = formatTemp(wx.airTempC);
+      document.getElementById('stationConditionText').textContent = wx.condition;
+      document.getElementById('stationHiLoText').textContent = `High ${formatTemp(wx.highC)} • Low ${formatTemp(wx.lowC)} • Feels ${formatTemp(wx.feelsC)}`;
+      document.getElementById('stationRainPctText').textContent = `${wx.rainPct}%`;
+      document.getElementById('stationHumidityText').textContent = `${wx.humidity}%`;
+      document.getElementById('stationUvText').textContent = wx.uvLabel;
+
+      const selWxSum = document.getElementById('selectedStationWeatherSummary');
+      const selWxEmo = document.getElementById('selectedStationWeatherEmoji');
+      if (selWxSum) selWxSum.textContent = `${formatTemp(wx.airTempC)} • ${wx.condition}`;
+      if (selWxEmo) selWxEmo.textContent = wx.emoji;
+
+      renderSafeWindows(station, dateStr);
+      renderSvgChart(station, dateStr, dayExtremes, minute);
+      renderSevenDayOutlook(station);
+      renderAllIndiaWeatherGrid();
+      renderSessionLogs();
+    }
+
+    function renderSafeWindows(station, dateStr) {
+      const minDepthM = state.plannerMinDepthM;
+      document.getElementById('plannerDepthValue').textContent = formatHeight(minDepthM, true);
+
+      const windows = [];
+      let inWindow = false;
+      let startMin = 0;
+
+      for (let m = 0; m <= 1440; m += 10) {
+        const h = computeTideHeightMeters(station, dateStr, m);
+        if (h >= minDepthM && !inWindow) {
+          inWindow = true;
+          startMin = m;
+        } else if (h < minDepthM && inWindow) {
+          inWindow = false;
+          windows.push(`${formatMinutesTo12Hr(startMin)} – ${formatMinutesTo12Hr(m)}`);
+        }
+      }
+      if (inWindow) {
+        windows.push(`${formatMinutesTo12Hr(startMin)} – 11:59 PM`);
+      }
+
+      const container = document.getElementById('safeWindowsList');
+      if (windows.length === 0) {
+        container.innerHTML = `<span class="text-xs font-medium text-coral">Water stays below ${formatHeight(minDepthM)} all day today</span>`;
+      } else {
+        container.innerHTML = windows.map(w => `
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-teal-500/15 text-teal-300 border border-teal-400/30 tabular-nums">${w}</span>
+        `).join('');
+      }
+    }
+
+    function renderSvgChart(station, dateStr, dayExtremes, activeMinute) {
+      const svg = document.getElementById('tideSvgChart');
+      const W = 960;
+      const H = 320;
+      const padL = 56;
+      const padR = 24;
+      const padT = 36;
+      const padB = 36;
+      const plotW = W - padL - padR;
+      const plotH = H - padT - padB;
+
+      const points = [];
+      let minM = Infinity;
+      let maxM = -Infinity;
+      for (let m = 0; m <= 1440; m += 10) {
+        const h = computeTideHeightMeters(station, dateStr, m);
+        if (h < minM) minM = h;
+        if (h > maxM) maxM = h;
+        points.push({ m, h });
+      }
+      const margin = Math.max(0.5, (maxM - minM) * 0.24);
+      const yMin = minM - margin;
+      const yMax = maxM + margin;
+
+      const xForMin = m => padL + (m / 1440) * plotW;
+      const yForH = h => padT + plotH - ((h - yMin) / (yMax - yMin || 1)) * plotH;
+
+      const pathCoords = points.map((p, idx) => `${idx === 0 ? 'M' : 'L'} ${xForMin(p.m).toFixed(1)} ${yForH(p.h).toFixed(1)}`).join(' ');
+      const areaCoords = `${pathCoords} L ${xForMin(1440).toFixed(1)} ${(padT + plotH).toFixed(1)} L ${xForMin(0).toFixed(1)} ${(padT + plotH).toFixed(1)} Z`;
+
+      const dawnX = xForMin(5 * 60 + 50);
+      const duskX = xForMin(17 * 60 + 40);
+
+      let gridHtml = '';
+      const steps = 4;
+      for (let i = 0; i <= steps; i++) {
+        const valM = yMin + ((yMax - yMin) * i) / steps;
+        const y = yForH(valM);
+        gridHtml += `
+          <line x1="${padL}" y1="${y.toFixed(1)}" x2="${W - padR}" y2="${y.toFixed(1)}" stroke="#1E3A5F" stroke-dasharray="3 3" stroke-width="1"/>
+          <text x="${padL - 8}" y="${(y + 4).toFixed(1)}" text-anchor="end" fill="#94A3B8" font-family="JetBrains Mono" font-size="11">${formatHeight(valM, true)}</text>
+        `;
+      }
+
+      const hourLabels = [
+        { hr: 0, label: '12 AM' },
+        { hr: 3, label: '3 AM' },
+        { hr: 6, label: '6 AM' },
+        { hr: 9, label: '9 AM' },
+        { hr: 12, label: '12 PM' },
+        { hr: 15, label: '3 PM' },
+        { hr: 18, label: '6 PM' },
+        { hr: 21, label: '9 PM' },
+        { hr: 24, label: '12 AM' }
+      ];
+      hourLabels.forEach(item => {
+        const x = xForMin(item.hr * 60);
+        gridHtml += `
+          <line x1="${x.toFixed(1)}" y1="${padT}" x2="${x.toFixed(1)}" y2="${padT + plotH}" stroke="#1E3A5F" stroke-opacity="0.5" stroke-width="1"/>
+          <text x="${x.toFixed(1)}" y="${H - 10}" text-anchor="middle" fill="#94A3B8" font-family="Inter" font-weight="500" font-size="11">${item.label}</text>
+        `;
+      });
+
+      let overlayHtml = '';
+      const overlayLegend = document.getElementById('overlayLegendItem');
+      const overlayLegendText = document.getElementById('overlayLegendText');
+      if (state.activityOverlay !== 'none') {
+        overlayLegend.classList.remove('hidden');
+        overlayLegend.classList.add('flex');
+        let yTop = padT;
+        let yBot = padT + plotH;
+        if (state.activityOverlay === 'boating') {
+          const threshY = Math.max(padT, Math.min(padT + plotH, yForH(state.plannerMinDepthM)));
+          yTop = padT;
+          yBot = threshY;
+          overlayLegendText.textContent = `Deep Water for Boats (> ${formatHeight(state.plannerMinDepthM)})`;
+        } else if (state.activityOverlay === 'tidepool') {
+          const lowCut = minM + (maxM - minM) * 0.32;
+          yTop = Math.max(padT, Math.min(padT + plotH, yForH(lowCut)));
+          yBot = padT + plotH;
+          overlayLegendText.textContent = `Low Water for Beach Walk (< ${formatHeight(lowCut)})`;
+        } else if (state.activityOverlay === 'surf') {
+          const midLow = minM + (maxM - minM) * 0.35;
+          const midHigh = minM + (maxM - minM) * 0.75;
+          yTop = yForH(midHigh);
+          yBot = yForH(midLow);
+          overlayLegendText.textContent = `Best Surf & Swim Depth (${formatHeight(midLow, false)}–${formatHeight(midHigh)})`;
+        } else if (state.activityOverlay === 'fishing') {
+          const midLow = minM + (maxM - minM) * 0.45;
+          const midHigh = minM + (maxM - minM) * 0.90;
+          yTop = yForH(midHigh);
+          yBot = yForH(midLow);
+          overlayLegendText.textContent = `Best Fishing Depth`;
+        }
+        overlayHtml = `
+          <rect x="${padL}" y="${yTop.toFixed(1)}" width="${plotW}" height="${Math.max(2, yBot - yTop).toFixed(1)}" fill="#2DD4BF" fill-opacity="0.14" stroke="#2DD4BF" stroke-dasharray="4 4" stroke-width="1.5"/>
+        `;
+      } else {
+        overlayLegend.classList.add('hidden');
+        overlayLegend.classList.remove('flex');
+      }
+
+      const pinsHtml = dayExtremes.map(ext => {
+        const cx = xForMin(ext.minute);
+        const cy = yForH(ext.heightM);
+        const isHigh = ext.type === 'HIGH';
+        const labelY = isHigh ? cy - 12 : cy + 19;
+        const pillColor = isHigh ? '#38BDF8' : '#2DD4BF';
+        const tag = isHigh ? 'HIGH' : 'LOW';
+        return `
+          <g class="cursor-pointer" data-pin-minute="${ext.minute}">
+            <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="5.5" fill="#07111E" stroke="${pillColor}" stroke-width="2.5"/>
+            <text x="${cx.toFixed(1)}" y="${labelY.toFixed(1)}" text-anchor="middle" fill="#F0F6FC" font-family="Inter" font-weight="700" font-size="11">
+              ${tag}: ${formatMinutesTo12Hr(ext.minute)} (${formatHeight(ext.heightM)})
+            </text>
+          </g>
+        `;
+      }).join('');
+
+      const scrubX = xForMin(activeMinute);
+      const scrubH = computeTideHeightMeters(station, dateStr, activeMinute);
+      const scrubY = yForH(scrubH);
+      const tooltipX = scrubX > W - 190 ? scrubX - 148 : scrubX + 12;
+
+      svg.innerHTML = `
+        <defs>
+          <linearGradient id="tideAreaGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.45"/>
+            <stop offset="65%" stop-color="#2DD4BF" stop-opacity="0.15"/>
+            <stop offset="100%" stop-color="#07111E" stop-opacity="0.0"/>
+          </linearGradient>
+        </defs>
+
+        <rect x="${dawnX.toFixed(1)}" y="${padT}" width="${(duskX - dawnX).toFixed(1)}" height="${plotH}" fill="#FBBF24" fill-opacity="0.06"/>
+
+        ${gridHtml}
+        ${overlayHtml}
+
+        <path d="${areaCoords}" fill="url(#tideAreaGrad)"/>
+        <path d="${pathCoords}" fill="none" stroke="#38BDF8" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="${pathCoords}" fill="none" stroke="#2DD4BF" stroke-width="2" stroke-dasharray="6 8" class="animate-dash-flow" stroke-opacity="0.85"/>
+
+        ${pinsHtml}
+
+        <line x1="${scrubX.toFixed(1)}" y1="${padT}" x2="${scrubX.toFixed(1)}" y2="${padT + plotH}" stroke="#F0F6FC" stroke-width="1.8" stroke-dasharray="4 3"/>
+        <circle cx="${scrubX.toFixed(1)}" cy="${scrubY.toFixed(1)}" r="14" fill="#38BDF8" fill-opacity="0.25" class="pulse-ring"/>
+        <circle cx="${scrubX.toFixed(1)}" cy="${scrubY.toFixed(1)}" r="7.5" fill="#38BDF8" stroke="#F0F6FC" stroke-width="2.5"/>
+
+        <g transform="translate(${tooltipX.toFixed(1)}, ${Math.max(padT + 6, Math.min(padT + plotH - 44, scrubY - 22)).toFixed(1)})">
+          <rect width="136" height="38" rx="8" fill="#07111E" fill-opacity="0.95" stroke="#38BDF8" stroke-opacity="0.6"/>
+          <text x="10" y="15" fill="#94A3B8" font-family="Inter" font-weight="600" font-size="10">${formatMinutesTo12Hr(activeMinute)}</text>
+          <text x="10" y="30" fill="#F0F6FC" font-family="JetBrains Mono" font-weight="700" font-size="12">Depth: ${formatHeight(scrubH)}</text>
+        </g>
+      `;
+    }
+
+    // Weather profiles for all 15 Indian coastal locations
+    const STATION_WEATHER_PROFILES = {
+      'sagar-wb':    { baseTempC: 29.4, highC: 31.2, lowC: 24.8, rainPct: 22, humidity: 76, uvLabel: '7 High',      condition: 'Partly Cloudy',    emoji: '⛅', advisory: 'Pleasant post-monsoon breeze' },
+      'digha-wb':    { baseTempC: 29.8, highC: 31.6, lowC: 25.0, rainPct: 18, humidity: 74, uvLabel: '8 Very High', condition: 'Mostly Sunny',     emoji: '🌤️', advisory: 'Great beach weather today' },
+      'diamond-wb':  { baseTempC: 30.1, highC: 32.0, lowC: 25.2, rainPct: 24, humidity: 78, uvLabel: '7 High',      condition: 'Warm & Humid',     emoji: '⛅', advisory: 'Calm river estuary visibility' },
+      'paradip-od':  { baseTempC: 30.2, highC: 31.8, lowC: 25.4, rainPct: 20, humidity: 75, uvLabel: '8 Very High', condition: 'Sunny Intervals',  emoji: '🌤️', advisory: 'Moderate sea breeze in afternoon' },
+      'vizag-ap':    { baseTempC: 30.6, highC: 32.4, lowC: 25.6, rainPct: 15, humidity: 71, uvLabel: '8 Very High', condition: 'Bright & Breezy',  emoji: '☀️', advisory: 'Clean surf & clear coastal skies' },
+      'chennai-tn':  { baseTempC: 29.9, highC: 31.5, lowC: 25.8, rainPct: 45, humidity: 81, uvLabel: '7 High',      condition: 'Passing Showers',  emoji: '🌦️', advisory: 'NE Monsoon coastal clouds' },
+      'sydney-au':   { baseTempC: 31.4, highC: 32.8, lowC: 26.5, rainPct: 35, humidity: 79, uvLabel: '9 Very High', condition: 'Warm & Breezy',    emoji: '🌤️', advisory: 'Brisk Pamban channel wind' },
+      'mumbai-in':   { baseTempC: 31.0, highC: 33.2, lowC: 26.0, rainPct: 10, humidity: 68, uvLabel: '8 Very High', condition: 'Sunny & Warm',     emoji: '☀️', advisory: 'Clear Arabian Sea visibility' },
+      'st-ives-uk':  { baseTempC: 31.2, highC: 33.8, lowC: 24.9, rainPct: 6,  humidity: 58, uvLabel: '8 Very High', condition: 'Clear & Dry',      emoji: '☀️', advisory: 'Strong tidal currents in Gulf' },
+      'kandla-gj':   { baseTempC: 30.8, highC: 33.0, lowC: 24.5, rainPct: 5,  humidity: 60, uvLabel: '8 Very High', condition: 'Sunny & Clear',    emoji: '☀️', advisory: 'Ideal dry coastal conditions' },
+      'mormugao-ga': { baseTempC: 30.4, highC: 32.0, lowC: 25.1, rainPct: 8,  humidity: 69, uvLabel: '8 Very High', condition: 'Golden Sunshine',  emoji: '☀️', advisory: 'Excellent beach & swim day' },
+      'mangalore-ka':{ baseTempC: 29.7, highC: 31.4, lowC: 24.8, rainPct: 16, humidity: 74, uvLabel: '8 Very High', condition: 'Mostly Sunny',     emoji: '🌤️', advisory: 'Light offshore morning wind' },
+      'kochi-kl':    { baseTempC: 29.5, highC: 31.0, lowC: 25.2, rainPct: 32, humidity: 79, uvLabel: '8 Very High', condition: 'Scattered Clouds', emoji: '⛅', advisory: 'Warm Malabar coastal breeze' },
+      'portblair-an':{ baseTempC: 28.8, highC: 30.4, lowC: 25.0, rainPct: 48, humidity: 83, uvLabel: '8 Very High', condition: 'Tropical Showers', emoji: '🌦️', advisory: 'Passing island reef showers' },
+      'sf-usa':      { baseTempC: 29.6, highC: 31.0, lowC: 26.2, rainPct: 25, humidity: 77, uvLabel: '9 Very High', condition: 'Lagoon Breeze',    emoji: '🌤️', advisory: 'Calm turquoise lagoon waters' }
+    };
+
+    function formatTemp(tempC) {
+      if (state.unit === 'ft') {
+        return `${(tempC * 1.8 + 32).toFixed(1)}°F`;
+      }
+      return `${tempC.toFixed(1)}°C`;
+    }
+
+    function getStationWeather(station, dateStr) {
+      const base = STATION_WEATHER_PROFILES[station.id] || {
+        baseTempC: 29.5, highC: 31.5, lowC: 25.0, rainPct: 15, humidity: 72, uvLabel: '8 Very High', condition: 'Partly Cloudy', emoji: '⛅', advisory: 'Normal coastal conditions'
+      };
+      const dayShift = Math.round(getDaysSinceEpoch(dateStr));
+      const deltaT = Math.sin(dayShift * 1.1 + station.m2) * 0.9;
+      const deltaRain = Math.round(Math.cos(dayShift * 0.9 + station.phaseOffsetHours) * 8);
+      const rainPct = Math.max(4, Math.min(85, base.rainPct + deltaRain));
+      let emoji = base.emoji;
+      let condition = base.condition;
+      if (dayShift !== 5) {
+        if (rainPct >= 42) { emoji = '🌦️'; condition = 'Coastal Showers'; }
+        else if (rainPct <= 12) { emoji = '☀️'; condition = 'Sunny & Clear'; }
+        else { emoji = '⛅'; condition = 'Partly Cloudy'; }
+      }
+      const airTempC = +(base.baseTempC + deltaT).toFixed(1);
+      const highC = +(base.highC + deltaT).toFixed(1);
+      const lowC = +(base.lowC + deltaT * 0.6).toFixed(1);
+      const feelsC = +(airTempC + 2.3).toFixed(1);
+      return {
+        airTempC,
+        highC,
+        lowC,
+        feelsC,
+        rainPct,
+        humidity: base.humidity,
+        uvLabel: base.uvLabel,
+        condition,
+        emoji,
+        advisory: base.advisory
+      };
+    }
+
+    function renderAllIndiaWeatherGrid() {
+      const grid = document.getElementById('allIndiaWeatherGrid');
+      if (!grid) return;
+      const searchInput = document.getElementById('weatherSearchInput');
+      const sortSelect = document.getElementById('weatherSortSelect');
+      const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
+      const sortBy = sortSelect ? sortSelect.value : 'default';
+
+      let items = state.stations.map(st => {
+        const wx = getStationWeather(st, state.selectedDateStr);
+        const curH = computeTideHeightMeters(st, state.selectedDateStr, state.scrubMinutes);
+        return { st, wx, curH };
+      });
+
+      if (state.coastFilter !== 'all') {
+        items = items.filter(item => (item.st.coast || 'east') === state.coastFilter);
+      }
+      if (query) {
+        items = items.filter(item =>
+          item.st.name.toLowerCase().includes(query) ||
+          item.st.regime.toLowerCase().includes(query) ||
+          item.wx.condition.toLowerCase().includes(query)
+        );
+      }
+
+      if (sortBy === 'tempDesc') {
+        items.sort((a, b) => b.wx.airTempC - a.wx.airTempC);
+      } else if (sortBy === 'rainAsc') {
+        items.sort((a, b) => a.wx.rainPct - b.wx.rainPct);
+      } else if (sortBy === 'tideDesc') {
+        items.sort((a, b) => b.st.m2 - a.st.m2);
+      }
+
+      if (items.length === 0) {
+        grid.innerHTML = `<div class="col-span-full p-6 text-center glass-well rounded-2xl text-sm text-slate-300">No Indian coastal locations match your search filter.</div>`;
+        return;
+      }
+
+      grid.innerHTML = items.map(({ st, wx, curH }) => {
+        const isCurrent = st.id === state.selectedStationId;
+        const coastBadge = st.coast === 'west' ? 'Arabian Sea' : st.coast === 'islands' ? 'Islands' : 'Bay of Bengal';
+        return `
+          <div data-weather-station-id="${st.id}" class="p-3.5 rounded-2xl border transition cursor-pointer flex flex-col justify-between ${
+            isCurrent
+              ? 'bg-sky-500/20 border-sky-400 shadow-lg'
+              : 'glass-well hover:border-white/35'
+          }">
+            <div>
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <div>
+                  <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/10 text-sky-300">${coastBadge}</span>
+                  <h4 class="font-display font-bold text-sm text-white mt-1.5 leading-snug">${st.name}</h4>
+                </div>
+                <span class="text-2xl shrink-0">${wx.emoji}</span>
+              </div>
+
+              <div class="flex items-baseline justify-between my-2">
+                <div>
+                  <span class="font-mono font-bold text-xl text-white tabular-nums">${formatTemp(wx.airTempC)}</span>
+                  <span class="text-xs text-sky-300 block font-medium">${wx.condition}</span>
+                </div>
+                <div class="text-right text-[11px] font-mono text-slate-300 tabular-nums">
+                  <div>H: ${formatTemp(wx.highC)}</div>
+                  <div>L: ${formatTemp(wx.lowC)}</div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-1.5 text-[11px] pt-2 border-t border-white/10 tabular-nums">
+                <span class="text-slate-300">💧 Rain: <strong class="text-sky-300">${wx.rainPct}%</strong></span>
+                <span class="text-slate-300">💨 <strong class="text-teal-300">${st.wind}</strong></span>
+                <span class="text-slate-300">🌊 Tide: <strong class="text-white">${formatHeight(curH)}</strong></span>
+                <span class="text-slate-300">🌡️ Sea: <strong class="text-amber">${formatTemp(st.waterTempC)}</strong></span>
+              </div>
+            </div>
+
+            <div class="mt-2.5 pt-2 border-t border-white/10 flex items-center justify-between text-[11px]">
+              <span class="text-slate-300 truncate pr-2">${wx.advisory}</span>
+              <span class="font-semibold text-sky-300 shrink-0">${isCurrent ? 'Active ✓' : 'View →'}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderSevenDayOutlook(station) {
+      const container = document.getElementById('sevenDayGrid');
+      const baseParts = state.selectedDateStr.split('-').map(Number);
+      const baseUtc = Date.UTC(baseParts[0], baseParts[1] - 1, baseParts[2]);
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+      let html = '';
+      for (let offset = 0; offset < 7; offset++) {
+        const d = new Date(baseUtc + offset * 86400000);
+        const yyyy = d.getUTCFullYear();
+        const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+        const dd = String(d.getUTCDate()).padStart(2, '0');
+        const dStr = `${yyyy}-${mm}-${dd}`;
+        const isSelected = dStr === state.selectedDateStr;
+
+        const extremes = findDayExtremes(station, dStr).filter(e => e.minute >= 0 && e.minute < 1440);
+        const highs = extremes.filter(e => e.type === 'HIGH').map(e => e.heightM);
+        const lows = extremes.filter(e => e.type === 'LOW').map(e => e.heightM);
+        const maxHigh = highs.length ? Math.max(...highs) : station.msl + station.m2;
+        const minLow = lows.length ? Math.min(...lows) : station.msl - station.m2;
+
+        const lunar = getLunarInfo(dStr);
+        const wx = getStationWeather(station, dStr);
+        const barColor = lunar.coeff >= 85 ? 'bg-teal-400' : lunar.coeff < 55 ? 'bg-amber' : 'bg-sky-400';
+        const strengthLabel = lunar.coeff >= 85 ? 'Big Tides' : lunar.coeff < 55 ? 'Gentle Tides' : 'Normal Tides';
+
+        html += `
+          <button type="button" data-select-date="${dStr}" class="text-left p-3.5 rounded-2xl border transition flex flex-col justify-between ${
+            isSelected
+              ? 'bg-sky-500/20 border-sky-400 shadow-lg'
+              : 'glass-well hover:border-white/35'
+          }">
+            <div class="flex items-center justify-between w-full mb-1.5">
+              <span class="text-xs font-bold text-slate-100">${offset === 0 ? 'Viewing' : dayNames[d.getUTCDay()].slice(0, 3)}</span>
+              <span class="text-xs text-slate-400">${monthNames[d.getUTCMonth()]} ${d.getUTCDate()}</span>
+            </div>
+            <!-- Daily Weather Pill inside 7-Day Card -->
+            <div class="flex items-center justify-between w-full py-1 px-2 mb-2 rounded-lg bg-white/5 border border-white/10 text-[11px]">
+              <span>${wx.emoji} <strong class="text-white">${formatTemp(wx.highC)}</strong></span>
+              <span class="text-sky-300">💧${wx.rainPct}%</span>
+            </div>
+            <div class="my-0.5 space-y-1 w-full text-xs tabular-nums">
+              <div class="flex items-center justify-between">
+                <span class="text-sky-400 font-medium">▲ High</span>
+                <span class="font-mono font-bold text-slate-100">${formatHeight(maxHigh)}</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-teal-400 font-medium">▼ Low</span>
+                <span class="font-mono font-semibold text-slate-300">${formatHeight(minLow)}</span>
+              </div>
+            </div>
+            <div class="mt-2.5 pt-2 border-t border-slate-800/80 w-full">
+              <div class="flex items-center justify-between text-[11px] text-slate-300 mb-1">
+                <span class="font-medium">${strengthLabel}</span>
+                <span class="text-slate-400">${Math.round(lunar.illum)}% ☾</span>
+              </div>
+              <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                <div class="h-full ${barColor}" style="width: ${Math.min(100, lunar.coeff)}%"></div>
+              </div>
+            </div>
+          </button>
+        `;
+      }
+      container.innerHTML = html;
+    }
+
+    function renderSessionLogs() {
+      const listEl = document.getElementById('sessionLogList');
+      document.getElementById('logCountBadge').textContent = `${state.logs.length} notes`;
+
+      if (state.logs.length === 0) {
+        listEl.innerHTML = `<p class="text-xs text-slate-500 italic">No notes added yet.</p>`;
+        return;
+      }
+
+      listEl.innerHTML = state.logs.map(item => `
+        <div class="p-3 rounded-xl glass-well text-xs space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold text-teal-300">${item.activity}</span>
+            <span class="font-mono text-[11px] text-sky-300 tabular-nums">${item.timeStr} • ${formatHeight(item.heightM)}</span>
+          </div>
+          <p class="text-slate-200 leading-snug">${item.notes}</p>
+          <span class="block text-[10px] text-slate-400">${item.stationName}</span>
+        </div>
+      `).join('');
+    }
+
+    function showToast(msg) {
+      const banner = document.getElementById('toastBanner');
+      document.getElementById('toastMessage').textContent = msg;
+      banner.classList.remove('hidden');
+      banner.classList.add('flex');
+      setTimeout(() => {
+        banner.classList.add('hidden');
+        banner.classList.remove('flex');
+      }, 3200);
+    }
+
+    // --- 5. Event Listeners & Interactive Wiring ---
+    function initInteractivity() {
+      document.getElementById('stationSelect').addEventListener('change', e => {
+        state.selectedStationId = e.target.value;
+        renderStationSelect();
+        renderMainDashboard();
+      });
+
+      document.getElementById('favStationBtn').addEventListener('click', () => {
+        const id = state.selectedStationId;
+        if (state.favorites.includes(id)) {
+          state.favorites = state.favorites.filter(f => f !== id);
+          showToast('Removed beach from Saved Beaches');
+        } else {
+          state.favorites.push(id);
+          showToast('Saved beach to your favorites');
+        }
+        saveState();
+        renderStationSelect();
+      });
+
+      document.getElementById('filterFavsBtn').addEventListener('click', () => {
+        if (state.favorites.length === 0 && !state.filterFavoritesOnly) {
+          showToast('Click the Star button first to save a favorite beach');
+          return;
+        }
+        state.filterFavoritesOnly = !state.filterFavoritesOnly;
+        if (state.filterFavoritesOnly && !state.favorites.includes(state.selectedStationId)) {
+          state.selectedStationId = state.favorites[0];
+        }
+        renderStationSelect();
+        renderMainDashboard();
+      });
+
+      document.querySelectorAll('.coast-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.coastFilter = btn.getAttribute('data-coast-filter') || 'all';
+          document.querySelectorAll('.coast-filter-btn').forEach(b => {
+            const active = b.getAttribute('data-coast-filter') === state.coastFilter;
+            b.className = active
+              ? 'coast-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-sky-500 text-slate-950 transition'
+              : 'coast-filter-btn px-3 py-1 rounded-lg text-xs font-medium text-slate-300 hover:text-sky-300 transition';
+          });
+          renderStationSelect();
+          renderMainDashboard();
+        });
+      });
+
+      function shiftDate(daysDelta) {
+        const parts = state.selectedDateStr.split('-').map(Number);
+        const dt = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2] + daysDelta));
+        const yyyy = dt.getUTCFullYear();
+        const mm = String(dt.getUTCMonth() + 1).padStart(2, '0');
+        const dd = String(dt.getUTCDate()).padStart(2, '0');
+        state.selectedDateStr = `${yyyy}-${mm}-${dd}`;
+        renderMainDashboard();
+      }
+
+      document.getElementById('prevDayBtn').addEventListener('click', () => shiftDate(-1));
+      document.getElementById('nextDayBtn').addEventListener('click', () => shiftDate(1));
+      document.getElementById('dateInput').addEventListener('change', e => {
+        if (e.target.value) {
+          state.selectedDateStr = e.target.value;
+          renderMainDashboard();
+        }
+      });
+      document.getElementById('todayBtn').addEventListener('click', () => {
+        state.selectedDateStr = '2026-10-15';
+        state.scrubMinutes = 23 * 60 + 35;
+        renderMainDashboard();
+        showToast('Jumped to current Indian Standard Time (11:35 PM IST)');
+      });
+
+      const mBtn = document.getElementById('unitMetersBtn');
+      const ftBtn = document.getElementById('unitFeetBtn');
+      mBtn.addEventListener('click', () => {
+        state.unit = 'm';
+        mBtn.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg bg-sky-500 text-slate-950 transition';
+        ftBtn.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-400 hover:text-slate-200 transition';
+        renderMainDashboard();
+      });
+      ftBtn.addEventListener('click', () => {
+        state.unit = 'ft';
+        ftBtn.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg bg-sky-500 text-slate-950 transition';
+        mBtn.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-400 hover:text-slate-200 transition';
+        renderMainDashboard();
+      });
+
+      document.getElementById('datumSelect').addEventListener('change', e => {
+        state.datum = e.target.value;
+        renderMainDashboard();
+      });
+
+      document.getElementById('activityOverlaySelect').addEventListener('change', e => {
+        state.activityOverlay = e.target.value;
+        renderMainDashboard();
+      });
+
+      document.getElementById('timeScrubber').addEventListener('input', e => {
+        state.scrubMinutes = Number(e.target.value);
+        renderMainDashboard();
+      });
+      document.getElementById('jumpDawnBtn').addEventListener('click', () => {
+        state.scrubMinutes = 6 * 60;
+        renderMainDashboard();
+      });
+      document.getElementById('jumpNoonBtn').addEventListener('click', () => {
+        state.scrubMinutes = 12 * 60;
+        renderMainDashboard();
+      });
+      document.getElementById('jumpDuskBtn').addEventListener('click', () => {
+        state.scrubMinutes = 17 * 60 + 45;
+        renderMainDashboard();
+      });
+
+      const svgChart = document.getElementById('tideSvgChart');
+      let isDraggingChart = false;
+
+      function updateScrubFromPointer(clientX) {
+        const rect = svgChart.getBoundingClientRect();
+        const relX = (clientX - rect.left) / (rect.width || 1);
+        const svgX = relX * 960;
+        const pct = (svgX - 56) / (960 - 56 - 24);
+        const mins = Math.max(0, Math.min(1439, Math.round(pct * 1440)));
+        state.scrubMinutes = mins;
+        renderMainDashboard();
+      }
+
+      svgChart.addEventListener('pointerdown', e => {
+        isDraggingChart = true;
+        updateScrubFromPointer(e.clientX);
+      });
+      window.addEventListener('pointermove', e => {
+        if (isDraggingChart) updateScrubFromPointer(e.clientX);
+      });
+      window.addEventListener('pointerup', () => {
+        isDraggingChart = false;
+      });
+
+      document.getElementById('extremesTableBody').addEventListener('click', e => {
+        const target = e.target.closest('[data-scrub-minute]');
+        if (target) {
+          state.scrubMinutes = Number(target.getAttribute('data-scrub-minute'));
+          renderMainDashboard();
+        }
+      });
+
+      document.getElementById('sevenDayGrid').addEventListener('click', e => {
+        const card = e.target.closest('[data-select-date]');
+        if (card) {
+          state.selectedDateStr = card.getAttribute('data-select-date');
+          renderMainDashboard();
+        }
+      });
+
+      const wxGrid = document.getElementById('allIndiaWeatherGrid');
+      if (wxGrid) {
+        wxGrid.addEventListener('click', e => {
+          const card = e.target.closest('[data-weather-station-id]');
+          if (card) {
+            state.selectedStationId = card.getAttribute('data-weather-station-id');
+            renderStationSelect();
+            renderMainDashboard();
+            showToast(`Loaded weather & tides for ${getCurrentStation().name.split(',')[0]}`);
+          }
+        });
+      }
+
+      const wxSearch = document.getElementById('weatherSearchInput');
+      if (wxSearch) {
+        wxSearch.addEventListener('input', () => renderAllIndiaWeatherGrid());
+      }
+      const wxSort = document.getElementById('weatherSortSelect');
+      if (wxSort) {
+        wxSort.addEventListener('change', () => renderAllIndiaWeatherGrid());
+      }
+
+      document.getElementById('plannerDepthSlider').addEventListener('input', e => {
+        state.plannerMinDepthM = Number(e.target.value);
+        if (state.activityOverlay === 'none') {
+          state.activityOverlay = 'boating';
+          document.getElementById('activityOverlaySelect').value = 'boating';
+        }
+        renderMainDashboard();
+      });
+
+      document.getElementById('exportTelemetryBtn').addEventListener('click', () => {
+        const st = getCurrentStation();
+        const h = computeTideHeightMeters(st, state.selectedDateStr, state.scrubMinutes);
+        const summary = `INDIA TIDE SUMMARY — ${st.name}\nDate: ${state.selectedDateStr} at ${formatMinutesTo12Hr(state.scrubMinutes)} IST\nWater Depth: ${formatHeight(h)}\nWaves: ${st.swell} | Wind: ${st.wind} (${st.windDir})`;
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(summary).then(() => showToast('Tide summary copied to clipboard!'));
+          } else {
+            throw new Error('Fallback');
+          }
+        } catch (err) {
+          const ta = document.createElement('textarea');
+          ta.value = summary;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          showToast('Tide summary copied to clipboard!');
+        }
+      });
+
+      const customModal = document.getElementById('customStationModal');
+      function closeCustomModal() {
+        customModal.classList.add('hidden');
+        customModal.classList.remove('flex');
+      }
+      document.getElementById('openCustomStationBtn').addEventListener('click', () => {
+        customModal.classList.remove('hidden');
+        customModal.classList.add('flex');
+      });
+      document.getElementById('closeCustomStationBtn').addEventListener('click', closeCustomModal);
+      document.getElementById('cancelCustomStationBtn').addEventListener('click', closeCustomModal);
+
+      document.getElementById('customStationForm').addEventListener('submit', e => {
+        e.preventDefault();
+        const name = document.getElementById('customNameInput').value.trim();
+        const lat = Number(document.getElementById('customLatInput').value);
+        const lon = Number(document.getElementById('customLonInput').value);
+        const m2 = Number(document.getElementById('customM2Input').value);
+        const phase = Number(document.getElementById('customPhaseInput').value);
+        if (!name) return;
+
+        const newId = 'custom-' + Date.now();
+        const newStation = {
+          id: newId,
+          isCustom: true,
+          coast: lon >= 78 ? 'east' : 'west',
+          name,
+          code: `CUSTOM-${Math.floor(100 + Math.random() * 899)}`,
+          coords: `${Math.abs(lat).toFixed(2)}° N, ${Math.abs(lon).toFixed(2)}° E`,
+          regime: m2 >= 1.8 ? 'Big Tide Swing • Custom Beach' : 'Normal Tides • Custom Beach',
+          tzLabel: 'IST (UTC+5:30)',
+          msl: +(m2 * 1.45).toFixed(2),
+          m2,
+          s2: +(m2 * 0.34).toFixed(2),
+          n2: +(m2 * 0.19).toFixed(2),
+          k1: 0.22,
+          o1: 0.13,
+          phaseOffsetHours: phase,
+          swell: '1.3m (Moderate)',
+          swellDir: 'Every 11s • SW',
+          wind: '18 km/h',
+          windDir: 'Gentle Breeze',
+          waterTempC: 28.0,
+          pressureHpa: 1012,
+          sunrise: '6:00 AM',
+          sunset: '5:50 PM'
+        };
+        state.stations.push(newStation);
+        state.selectedStationId = newId;
+        state.favorites.push(newId);
+        saveState();
+        renderStationSelect();
+        renderMainDashboard();
+        closeCustomModal();
+        showToast(`Added beach: ${name}`);
+      });
+
+      const logModal = document.getElementById('logSessionModal');
+      function closeLogModal() {
+        logModal.classList.add('hidden');
+        logModal.classList.remove('flex');
+      }
+      document.getElementById('openLogModalBtn').addEventListener('click', () => {
+        logModal.classList.remove('hidden');
+        logModal.classList.add('flex');
+      });
+      document.getElementById('closeLogModalBtn').addEventListener('click', closeLogModal);
+      document.getElementById('cancelLogModalBtn').addEventListener('click', closeLogModal);
+
+      document.getElementById('logSessionForm').addEventListener('submit', e => {
+        e.preventDefault();
+        const activity = document.getElementById('logActivityType').value;
+        const notes = document.getElementById('logNotesInput').value.trim();
+        if (!notes) return;
+        const st = getCurrentStation();
+        const h = computeTideHeightMeters(st, state.selectedDateStr, state.scrubMinutes);
+        state.logs.unshift({
+          id: 'log-' + Date.now(),
+          stationName: st.name.split(',')[0],
+          activity,
+          timeStr: formatMinutesTo12Hr(state.scrubMinutes),
+          heightM: h,
+          notes
+        });
+        document.getElementById('logNotesInput').value = '';
+        saveState();
+        renderSessionLogs();
+        closeLogModal();
+        showToast('Saved your beach note!');
+      });
+    }
+
+    // --- 6. Live 60FPS Coastal Beach, Boat & Wave Animation Engine ---
+    let simAnimFrameId = null;
+    let isPlayingTimelapse = false;
+    let timelapseSpeed = 5;
+    let wavePhase = 0;
+    const foamParticles = Array.from({ length: 28 }, (_, i) => ({
+      xRatio: (i * 0.037) % 1,
+      yOffset: (i % 5) * 6 + 4,
+      size: (i % 3) + 1.5,
+      speed: 0.0008 + (i % 4) * 0.0003
+    }));
+
+    function drawBeachSimulation() {
+      const canvas = document.getElementById('beachSimCanvas');
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const targetW = Math.max(300, Math.floor(rect.width * dpr));
+      const targetH = Math.max(180, Math.floor(rect.height * dpr));
+      if (canvas.width !== targetW || canvas.height !== targetH) {
+        canvas.width = targetW;
+        canvas.height = targetH;
+      }
+      const ctx = canvas.getContext('2d');
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      const W = rect.width || 800;
+      const H = rect.height || 240;
+
+      const station = getCurrentStation();
+      const dateStr = state.selectedDateStr;
+      const minute = state.scrubMinutes;
+      const currentH = computeTideHeightMeters(station, dateStr, minute);
+      const nextH = computeTideHeightMeters(station, dateStr, minute + 15);
+      const slope = (nextH - currentH) * 4;
+      const isRising = slope >= 0;
+
+      // Normalize tide level 0..1 for visual water height
+      const minExpected = Math.max(0, station.msl - (station.m2 + station.s2) * 1.15);
+      const maxExpected = station.msl + (station.m2 + station.s2) * 1.15 + 0.5;
+      const tideNorm = Math.max(0.08, Math.min(0.94, (currentH - minExpected) / Math.max(0.8, maxExpected - minExpected)));
+
+      // 1. Dynamic Day/Night Sky Gradient based on time of day (minute 0..1439)
+      const isDaylight = minute >= 345 && minute <= 1065; // ~5:45 AM to 5:45 PM
+      const isGolden = (minute >= 315 && minute < 390) || (minute > 1020 && minute <= 1095);
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, H * 0.65);
+      if (isGolden) {
+        skyGrad.addColorStop(0, '#1E1B4B');
+        skyGrad.addColorStop(0.55, '#7C2D12');
+        skyGrad.addColorStop(1, '#F59E0B');
+      } else if (isDaylight) {
+        skyGrad.addColorStop(0, '#0369A1');
+        skyGrad.addColorStop(0.6, '#0284C7');
+        skyGrad.addColorStop(1, '#38BDF8');
+      } else {
+        skyGrad.addColorStop(0, '#030712');
+        skyGrad.addColorStop(0.6, '#07111E');
+        skyGrad.addColorStop(1, '#0E1E32');
+      }
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Stars at night
+      if (!isDaylight) {
+        ctx.fillStyle = 'rgba(240, 246, 252, 0.65)';
+        for (let i = 0; i < 18; i++) {
+          const sx = ((i * 97) % 100) * 0.01 * W * 0.85;
+          const sy = ((i * 43) % 100) * 0.01 * (H * 0.38) + 8;
+          const twinkle = 1 + 0.6 * Math.sin(wavePhase * 2 + i);
+          ctx.beginPath();
+          ctx.arc(sx, sy, twinkle, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // 2. Animated Sun or Moon travelling across the sky arc
+      const bodyX = W * 0.08 + (minute / 1440) * (W * 0.72);
+      const dayArcProgress = isDaylight
+        ? (minute - 345) / (1065 - 345)
+        : ((minute + 375) % 1440) / 720;
+      const bodyY = H * 0.42 - Math.sin(Math.max(0.05, Math.min(0.95, dayArcProgress)) * Math.PI) * (H * 0.30);
+
+      if (isDaylight) {
+        // Glowing Sun
+        const sunGlow = ctx.createRadialGradient(bodyX, bodyY, 4, bodyX, bodyY, 32);
+        sunGlow.addColorStop(0, 'rgba(253, 224, 71, 0.95)');
+        sunGlow.addColorStop(0.4, 'rgba(251, 191, 36, 0.4)');
+        sunGlow.addColorStop(1, 'rgba(251, 191, 36, 0)');
+        ctx.fillStyle = sunGlow;
+        ctx.beginPath();
+        ctx.arc(bodyX, bodyY, 32, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#FEF08A';
+        ctx.beginPath();
+        ctx.arc(bodyX, bodyY, 11, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        // Glowing Moon
+        const moonGlow = ctx.createRadialGradient(bodyX, bodyY, 3, bodyX, bodyY, 26);
+        moonGlow.addColorStop(0, 'rgba(56, 189, 248, 0.45)');
+        moonGlow.addColorStop(1, 'rgba(56, 189, 248, 0)');
+        ctx.fillStyle = moonGlow;
+        ctx.beginPath();
+        ctx.arc(bodyX, bodyY, 26, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#FDE68A';
+        ctx.beginPath();
+        ctx.arc(bodyX, bodyY, 9.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // 3. Water Surface Y Coordinate (rises from H*0.78 at Low Tide up to H*0.36 at High Tide)
+      const baseWaterY = H * 0.78 - tideNorm * (H * 0.42);
+
+      // 4. Background Ocean Swell Layer
+      ctx.beginPath();
+      for (let x = 0; x <= W * 0.85; x += 12) {
+        const y = baseWaterY - 4 + Math.sin(x * 0.025 + wavePhase * 1.3) * 5;
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.lineTo(W * 0.85, H);
+      ctx.lineTo(0, H);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(14, 116, 144, 0.55)';
+      ctx.fill();
+
+      // 5. Foreground Animated Ocean Wave Layer
+      const waterGrad = ctx.createLinearGradient(0, baseWaterY, 0, H);
+      waterGrad.addColorStop(0, 'rgba(56, 189, 248, 0.82)');
+      waterGrad.addColorStop(0.45, 'rgba(14, 165, 233, 0.78)');
+      waterGrad.addColorStop(1, 'rgba(7, 29, 54, 0.96)');
+
+      ctx.beginPath();
+      for (let x = 0; x <= W * 0.88; x += 10) {
+        const waveAmp = 5.5 + Math.min(4, station.m2 * 1.2);
+        const y = baseWaterY + Math.sin(x * 0.032 - wavePhase * (isRising ? 2.2 : -1.8)) * waveAmp;
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.lineTo(W * 0.88, H);
+      ctx.lineTo(0, H);
+      ctx.closePath();
+      ctx.fillStyle = waterGrad;
+      ctx.fill();
+
+      // Glowing Wave Crest Line
+      ctx.beginPath();
+      for (let x = 0; x <= W * 0.82; x += 10) {
+        const waveAmp = 5.5 + Math.min(4, station.m2 * 1.2);
+        const y = baseWaterY + Math.sin(x * 0.032 - wavePhase * (isRising ? 2.2 : -1.8)) * waveAmp;
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = '#7DD3FC';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // 6. Animated Current Flow Particles & Direction Arrows under the water
+      const dirSign = Math.abs(slope) < 0.05 ? 0 : isRising ? 1 : -1;
+      ctx.fillStyle = 'rgba(186, 230, 253, 0.55)';
+      foamParticles.forEach(p => {
+        p.xRatio = (p.xRatio + dirSign * p.speed + 1) % 1;
+        const px = p.xRatio * (W * 0.62) + 20;
+        const py = baseWaterY + 14 + p.yOffset;
+        if (py < H - 18) {
+          ctx.beginPath();
+          ctx.arc(px, py, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      // Draw Current Direction Arrows in the water
+      if (dirSign !== 0 && baseWaterY < H - 36) {
+        ctx.save();
+        ctx.strokeStyle = isRising ? 'rgba(45, 212, 191, 0.75)' : 'rgba(56, 189, 248, 0.75)';
+        ctx.fillStyle = isRising ? 'rgba(45, 212, 191, 0.85)' : 'rgba(56, 189, 248, 0.85)';
+        ctx.lineWidth = 2;
+        const arrowY = Math.min(H - 22, baseWaterY + 26);
+        for (let ax = W * 0.14; ax <= W * 0.46; ax += W * 0.15) {
+          const shift = ((wavePhase * 18 * dirSign) % 24);
+          const xStart = ax + shift;
+          const xEnd = xStart + dirSign * 22;
+          ctx.beginPath();
+          ctx.moveTo(xStart, arrowY);
+          ctx.lineTo(xEnd, arrowY);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(xEnd, arrowY);
+          ctx.lineTo(xEnd - dirSign * 6, arrowY - 4);
+          ctx.lineTo(xEnd - dirSign * 6, arrowY + 4);
+          ctx.closePath();
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      // 7. Sloping Sandy Indian Beach, Coastal Steps & Lighthouse on the Right
+      const beachStartX = W * 0.52;
+      const beachPeakX = W * 0.86;
+      const beachTopY = H * 0.26;
+
+      const sandGrad = ctx.createLinearGradient(beachStartX, H, W, beachTopY);
+      sandGrad.addColorStop(0, '#78350F');
+      sandGrad.addColorStop(0.5, '#B45309');
+      sandGrad.addColorStop(1, '#D97706');
+
+      ctx.beginPath();
+      ctx.moveTo(0, H);
+      ctx.lineTo(0, H - 12);
+      ctx.lineTo(beachStartX, H - 16);
+      ctx.quadraticCurveTo(W * 0.70, H * 0.62, beachPeakX, beachTopY);
+      ctx.lineTo(W, beachTopY);
+      ctx.lineTo(W, H);
+      ctx.closePath();
+      ctx.fillStyle = sandGrad;
+      ctx.fill();
+
+      // Lighthouse on the coastal headland
+      const lhX = W * 0.91;
+      const lhBaseY = beachTopY + 2;
+      // Rotating Lighthouse Light Beam at night/dusk
+      if (!isDaylight || isGolden) {
+        const beamLen = W * 0.35;
+        const beamSweep = Math.sin(wavePhase * 1.4) * 0.15;
+        const beamGrad = ctx.createLinearGradient(lhX, lhBaseY - 38, lhX - beamLen, lhBaseY - 20);
+        beamGrad.addColorStop(0, 'rgba(253, 224, 71, 0.55)');
+        beamGrad.addColorStop(1, 'rgba(253, 224, 71, 0)');
+        ctx.fillStyle = beamGrad;
+        ctx.beginPath();
+        ctx.moveTo(lhX, lhBaseY - 38);
+        ctx.lineTo(lhX - beamLen, lhBaseY - 58 + beamSweep * 80);
+        ctx.lineTo(lhX - beamLen, lhBaseY - 12 + beamSweep * 80);
+        ctx.closePath();
+        ctx.fill();
+      }
+      // Lighthouse Tower
+      ctx.fillStyle = '#F8FAFC';
+      ctx.beginPath();
+      ctx.moveTo(lhX - 7, lhBaseY);
+      ctx.lineTo(lhX - 4, lhBaseY - 36);
+      ctx.lineTo(lhX + 4, lhBaseY - 36);
+      ctx.lineTo(lhX + 7, lhBaseY);
+      ctx.closePath();
+      ctx.fill();
+      // Red stripes
+      ctx.fillStyle = '#EF4444';
+      ctx.fillRect(lhX - 5.5, lhBaseY - 24, 11, 7);
+      ctx.fillRect(lhX - 4.5, lhBaseY - 36, 9, 5);
+      // Lantern dome
+      ctx.fillStyle = '#FACC15';
+      ctx.beginPath();
+      ctx.arc(lhX, lhBaseY - 39, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 8. Bobbing Fishing Boat on the Water Surface
+      const boatX = W * 0.28;
+      const waveAmpAtBoat = 5.5 + Math.min(4, station.m2 * 1.2);
+      const boatWaterY = baseWaterY + Math.sin(boatX * 0.032 - wavePhase * (isRising ? 2.2 : -1.8)) * waveAmpAtBoat;
+      const boatTilt = Math.cos(boatX * 0.032 - wavePhase * (isRising ? 2.2 : -1.8)) * 0.09;
+
+      // Vertical Depth Clearance Ruler Line under the Boat
+      const seabedY = H - 14;
+      ctx.save();
+      ctx.strokeStyle = 'rgba(240, 246, 252, 0.45)';
+      ctx.setLineDash([3, 3]);
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(boatX, boatWaterY + 4);
+      ctx.lineTo(boatX, seabedY);
+      ctx.stroke();
+      ctx.restore();
+
+      // Draw Boat Hull & Cabin
+      ctx.save();
+      ctx.translate(boatX, boatWaterY);
+      ctx.rotate(boatTilt);
+      // Hull
+      ctx.fillStyle = '#F97316';
+      ctx.beginPath();
+      ctx.moveTo(-22, -4);
+      ctx.lineTo(24, -4);
+      ctx.lineTo(16, 6);
+      ctx.lineTo(-16, 6);
+      ctx.closePath();
+      ctx.fill();
+      // White stripe
+      ctx.fillStyle = '#F8FAFC';
+      ctx.fillRect(-14, -10, 16, 6);
+      // Mast & Flag
+      ctx.strokeStyle = '#E2E8F0';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(2, -10);
+      ctx.lineTo(2, -22);
+      ctx.stroke();
+      ctx.fillStyle = '#2DD4BF';
+      ctx.beginPath();
+      ctx.moveTo(2, -22);
+      ctx.lineTo(12, -18);
+      ctx.lineTo(2, -15);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      // High / Low Reference Markers on the Right Shoreline
+      const highLineY = H * 0.38;
+      const lowLineY = H * 0.74;
+      ctx.save();
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+      ctx.beginPath();
+      ctx.moveTo(W * 0.58, highLineY);
+      ctx.lineTo(W * 0.85, highLineY);
+      ctx.stroke();
+      ctx.fillStyle = '#7DD3FC';
+      ctx.font = '600 10px Inter, sans-serif';
+      ctx.fillText('High Tide Line', W * 0.60, highLineY - 5);
+
+      ctx.strokeStyle = 'rgba(45, 212, 191, 0.35)';
+      ctx.beginPath();
+      ctx.moveTo(W * 0.45, lowLineY);
+      ctx.lineTo(W * 0.72, lowLineY);
+      ctx.stroke();
+      ctx.fillStyle = '#5EEAD4';
+      ctx.fillText('Low Tide Line', W * 0.47, lowLineY - 5);
+      ctx.restore();
+
+      ctx.restore();
+
+      // Update overlay text on simulation
+      const timeOverlay = document.getElementById('simTimeOverlay');
+      const depthOverlay = document.getElementById('simDepthOverlay');
+      const beachStateOverlay = document.getElementById('simBeachStateOverlay');
+      if (timeOverlay) timeOverlay.textContent = `${formatMinutesTo12Hr(minute)} IST`;
+      if (depthOverlay) depthOverlay.textContent = `Water Height: ${formatHeight(currentH)}`;
+      if (beachStateOverlay) {
+        beachStateOverlay.textContent = Math.abs(slope) < 0.05
+          ? 'Tide is turning — calm water'
+          : isRising
+            ? 'Tide coming in → Waves rising up the beach'
+            : '← Tide going out — More dry sand exposed';
+      }
+    }
+
+    function startAnimationLoop() {
+      if (simAnimFrameId) cancelAnimationFrame(simAnimFrameId);
+      let lastTick = performance.now();
+      function step(now) {
+        const dt = (now - lastTick) / 1000;
+        lastTick = now;
+        wavePhase += dt * 1.8;
+
+        if (isPlayingTimelapse) {
+          state.scrubMinutes = (state.scrubMinutes + timelapseSpeed * dt * 12) % 1440;
+          renderMainDashboard();
+        } else {
+          drawBeachSimulation();
+        }
+        simAnimFrameId = requestAnimationFrame(step);
+      }
+      simAnimFrameId = requestAnimationFrame(step);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderStationSelect();
+      renderMainDashboard();
+      initInteractivity();
+
+      const playBtn = document.getElementById('playTimelapseBtn');
+      const playText = document.getElementById('playTimelapseText');
+      const playIcon = document.getElementById('playTimelapseIcon');
+      const speedSel = document.getElementById('animSpeedSelect');
+
+      if (playBtn) {
+        playBtn.addEventListener('click', () => {
+          isPlayingTimelapse = !isPlayingTimelapse;
+          if (isPlayingTimelapse) {
+            playIcon.textContent = '⏸';
+            playText.textContent = 'Pause 24h Animation';
+            showToast('Playing 24-hour tide & beach animation');
+          } else {
+            playIcon.textContent = '▶';
+            playText.textContent = 'Play 24h Tide Animation';
+          }
+        });
+      }
+      if (speedSel) {
+        speedSel.addEventListener('change', e => {
+          timelapseSpeed = Number(e.target.value) || 5;
+        });
+      }
+
+      startAnimationLoop();
+      window.addEventListener('resize', drawBeachSimulation);
+
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    });
+  </script>
+</body>
+</html>
